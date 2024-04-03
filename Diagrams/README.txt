@@ -1,1 +1,1 @@
-The ER Diagrams will be in this directory
+The Diagrams will be in this directory
