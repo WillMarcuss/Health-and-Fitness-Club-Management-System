@@ -37,8 +37,8 @@ def update_member_profile(member_id, first_name=None, last_name=None, height=Non
 
 # 3. Dashboard Display
 def display_member_dashboard(member_id):
-    routines = db.execute_query("SELECT * FROM ExerciseRoutines WHERE member_id = %s;", (member_id,),fetch=True,)[1]["routines"]
-    goals = db.execute_query("SELECT * FROM FitnessGoals WHERE member_id = %s;", (member_id,),fetch=True,)[1]["goals"]
+    routines = db.execute_query("SELECT * FROM ExerciseRoutines WHERE member_id = %s;", (member_id,),fetch=True,)[0]["routines"]
+    goals = db.execute_query("SELECT * FROM FitnessGoals WHERE member_id = %s;", (member_id,),fetch=True,)[0]["goals"]
     print(f"Exercise Routines: {routines}")
     print(f"Fitness Goals: {goals}")
 
