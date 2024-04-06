@@ -1,47 +1,4 @@
-import psycopg2
-import psycopg2.extras
-import sys
-
-
-# Database connection setup
-def connect_db():
-    return psycopg2.connect(
-        host="localhost", database="Health-Fitness-Club", user="postgres", password="comp3005", port="5432"
-    )
-
-
-# Generic query execution helper
-def execute_query(query, args=(), fetch=False):
-    conn = connect_db()
-    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-    cursor.execute(query, args)
-    if fetch:
-        result = cursor.fetchall()
-        conn.commit()
-        cursor.close()
-        conn.close()
-        return result
-    else:
-        conn.commit()
-        cursor.close()
-        conn.close()
-
-
-# Register a new member
-def register_member():
-    print("Register New Member")
-    first_name = input("First name: ")
-    last_name = input("Last name: ")
-    height = input("Height (cm): ")
-    weight = input("Weight (kg): ")
-    member_id = execute_query(
-        "INSERT INTO member (first_name, last_name, height, weight) VALUES (%s, %s, %s, %s) RETURNING member_id;",
-        (first_name, last_name, float(height), float(weight)),
-        fetch=True,
-    )[0]["member_id"]
-    print(
-        f"Registered successfully. Your member ID is {member_id}. Please remember it for login."
-    )
+import functions as fs
 
 
 # Member interface
@@ -133,7 +90,7 @@ def main():
         elif choice == "3":
             admin_interface()
         elif choice == "4":
-            register_member()
+            fs.register_member()
         elif choice == "5":
             print("Goodbye!")
             break
