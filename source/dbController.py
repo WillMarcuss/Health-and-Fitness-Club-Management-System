@@ -1,10 +1,15 @@
 import psycopg2
 import psycopg2.extras
 
+
 # Database connection setup
 def connect_db():
     return psycopg2.connect(
-        host="localhost", database="Health-Fitness-Club", user="postgres", password="comp3005", port="5432"
+        host="localhost",
+        database="Health-Fitness-Club",
+        user="postgres",
+        password="comp3005",
+        port="5432",
     )
 
 

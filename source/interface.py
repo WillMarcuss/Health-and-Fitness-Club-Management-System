@@ -83,19 +83,29 @@ def main():
         choice = input("Enter choice: ")
         if choice == "1":
             member_id = input("Enter Member ID: ")
-            member_interface(member_id)
+            if fs.check_id_exists(member_id, "member", "member_id"):
+                member_interface(member_id)
+            else:
+                print("\nMember ID does not exist. Please try again.")
         elif choice == "2":
             trainer_id = input("Enter Trainer ID: ")
-            trainer_interface(trainer_id)
+            if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
+                trainer_interface(trainer_id)
+            else:
+                print("\nTrainer ID does not exist. Please try again.")
         elif choice == "3":
-            admin_interface()
+            employee_id = input("Enter Employee ID: ")
+            if fs.check_id_exists(employee_id, "employee", "employee_id"):
+                admin_interface()
+            else:
+                print("\nEmployee ID does not exist. Please try again.")
         elif choice == "4":
             fs.register_member()
         elif choice == "5":
-            print("Goodbye!")
+            print("\nGoodbye!")
             break
         else:
-            print("Invalid option.")
+            print("\nInvalid option.")
 
 
 main()
