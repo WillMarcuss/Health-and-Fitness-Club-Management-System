@@ -21,6 +21,7 @@ CREATE TABLE Billing (
     amount NUMERIC(10, 2),
     date DATE,
     member_id INT,
+    status VARCHAR(255),
     FOREIGN KEY (member_id) REFERENCES Member(member_id)
 );
 
