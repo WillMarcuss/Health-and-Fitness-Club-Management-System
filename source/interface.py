@@ -10,7 +10,8 @@ def member_interface(member_id):
         )
         choice = input("Enter choice: ")
         if choice == "1":
-            # Assume update_member_profile function exists and is implemented correctly
+            print("\n----Update Profile----\n\n1. First Name\n2. Last Name\n3. Weight\n4. Height\n5. Fitness Goals\n6. Exercise Routines\n7. Exit")
+            selection = input("Enter choice: ")
             pass
         elif choice == "2":
             # Assume display_member_dashboard function exists and is implemented correctly
