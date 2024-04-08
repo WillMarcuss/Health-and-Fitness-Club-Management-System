@@ -14,6 +14,27 @@ CREATE TABLE Trainer (
     last_name VARCHAR(255)
 );
 
+-- Creating the Trainer Availability table
+CREATE TABLE trainer_availability (
+    availability_id SERIAL PRIMARY KEY,
+    trainer_id INT NOT NULL,
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    CONSTRAINT fk_trainer
+        FOREIGN KEY (trainer_id)
+        REFERENCES trainer (trainer_id)
+        ON DELETE CASCADE,
+    CONSTRAINT check_time
+        CHECK (end_time > start_time),
+    CONSTRAINT unique_trainer_date_start_time
+        UNIQUE (trainer_id, date, start_time)
+);
+
+CREATE INDEX idx_trainer_date
+    ON trainer_availability (trainer_id, date);
+
+
 -- Creating the Billing table
 CREATE TABLE Billing (
     billing_id SERIAL PRIMARY KEY,
