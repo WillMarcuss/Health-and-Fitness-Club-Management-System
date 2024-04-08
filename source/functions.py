@@ -86,3 +86,50 @@ def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
         fetch=True,
     )
     print("Session scheduled successfully.")
+
+
+
+def manageRoomBookings():
+    print("\n--- Manage Room Bookings ---\n\n")
+    print("1. View Room Bookings")
+    print("2. Update Room Booking")
+    print("3. Exit\n")
+    choice = input("Enter Choice: ")
+    
+    if choice == '1':
+        print('\n====================================================')
+        print('\nAll scheduled room bookings (starting from earliest date):\n')
+        roomBookings = db.execute_query("SELECT b.booking_id, b.room_name, f.*, t.first_name, t.last_name FROM bookings b JOIN fitnessclass f ON b.class_id = f.class_id JOIN trainer t ON f.trainer_id = t.trainer_id ORDER BY f.class_date ASC", (), fetch=True)
+        
+        for roomBooking in roomBookings:
+
+            print("Room: " + roomBooking[1] + '\n')
+
+            classDetails = roomBooking[2:]
+            print(f"Class: {classDetails[1]}")
+            print(f"Date: {classDetails[2]}")
+            print(f"Start Time: {classDetails[3]}")
+            print(f"End Time: {classDetails[4]}")
+            
+            trainerDetails = roomBooking[10:]
+            print(f"Trainer: {trainerDetails[0]} {trainerDetails[1]}\n")
+        
+        print('====================================================')
+
+    elif choice == '2':
+        bookingID = input("\nEnter Booking ID: ")
+        newRoomName = input("Enter new name for the room: ")
+
+        booking = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
+
+        if booking:
+            db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
+            print("\nSuccessfully updated booking!")
+        else:
+            print('\nBooking ID does not exist.')
+
+    elif choice == '3':
+        return
+    
+    else:
+        print("Invalid option.")
