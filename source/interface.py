@@ -56,8 +56,7 @@ def admin_interface():
         if choice == "1":
             fs.manageRoomBookings()
         elif choice == "2":
-            # Assume update_equipment_maintenance function exists and is implemented correctly
-            pass
+            fs.monitorEquipmentMaintenance()
         elif choice == "3":
             # Assume update_class_schedule function exists and is implemented correctly
             pass

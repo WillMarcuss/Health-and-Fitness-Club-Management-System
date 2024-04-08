@@ -88,7 +88,9 @@ def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
     print("Session scheduled successfully.")
 
 
+#Admin Functions
 
+# 1. Manage Room Bookings
 def manageRoomBookings():
     print("\n--- Manage Room Bookings ---\n\n")
     print("1. View Room Bookings")
@@ -103,7 +105,7 @@ def manageRoomBookings():
         
         for roomBooking in roomBookings:
 
-            print("Room: " + roomBooking[1] + '\n')
+            print("Room: " + roomBooking['room_name'] + '\n')
 
             classDetails = roomBooking[2:]
             print(f"Class: {classDetails[1]}")
@@ -129,6 +131,54 @@ def manageRoomBookings():
             print('\nBooking ID does not exist.')
 
     elif choice == '3':
+        return
+    
+    else:
+        print("Invalid option.")
+
+# 2. Monitor Equipment Maintenance
+def monitorEquipmentMaintenance():
+    print("\n--- Monitor Equipment Maintenance ---\n")
+    print("1. View Equipment Maintenance")
+    print("2. Update Equipment's Maintenance Date")
+    print("3. Add Equipment + Maintenance Date")
+    print("4. Exit\n")
+    choice = input("Enter Choice: ")
+    
+    if choice == '1':
+        print('\n====================================================')
+        print('\nAll equipment maintenance records:\n')
+        maintenanceRecords = db.execute_query("SELECT * FROM fitnessequipment;", (), fetch=True)
+        
+        for record in maintenanceRecords:
+            print(f"Equipment ID: {record[0]}")
+            print(f"Equipment Name: {record[1]}")
+            print(f"Last Maintenance Date: {record[2]}\n")
+        
+        print('====================================================')
+
+    elif choice == '2':
+        equipmentID = input("\nEnter Equipment ID to update maintenance date: ")
+        newDate = input("Enter new maintenance date (YYYY-MM-DD): ")
+
+        equipment = db.execute_query("SELECT * FROM fitnessequipment WHERE equipment_id = %s;", (equipmentID,), fetch=True)
+
+        if equipment:
+            db.execute_query("UPDATE fitnessequipment SET last_maintenance = %s WHERE equipment_id = %s;", (newDate, equipmentID), fetch=False)
+            print("\nSuccessfully updated equipment maintenance date!\n")
+        else:
+            print('\nEquipment ID does not exist.\n')
+
+    elif choice == '3':
+        equipmentName = input("\nEnter new Equipment Name: ")
+        maintenanceDate = input("Enter Maintenance Date (YYYY-MM-DD): ")
+
+        db.execute_query("INSERT INTO fitnessequipment (equipment_name, last_maintenance) VALUES (%s, %s);", (equipmentName, maintenanceDate), fetch=False)
+
+        print("\nSuccessfully added new equipment and maintenance date!\n")
+
+    elif choice == '4':
+        print("Exiting maintenance monitor.")
         return
     
     else:
