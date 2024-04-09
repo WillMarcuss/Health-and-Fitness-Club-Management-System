@@ -150,7 +150,6 @@ def search_for_member(fName=None, lName=None):
 
 
 #Admin Functions
-
 # 1. Manage Room Bookings
 def manageRoomBookings():
     print("\n--- Manage Room Bookings ---\n")
