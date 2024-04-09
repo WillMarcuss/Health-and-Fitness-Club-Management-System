@@ -86,16 +86,22 @@ def manage_pt_session(member_id):
                 print(f"\nPT Session ID: {sesh[0]} on {sesh[1]} from {sesh[2]} to {sesh[3]} with Trainer: {sesh[6]} {sesh[7]}")
         elif selection == "2":
             sessionID = input("\nEnter the session ID in which you would like to reschedule: ")
-            while True:
-                date = input("Enter the date you would like to reschedule to (yyyy-mm-dd): ")
-                startTime = input("Enter the start time you would like to reschedule to (ex: 09:00): ")
-                endTime = input("Enter the end time you would like to reschedule to (ex: 10:00): ")
-                if checkDateTimeValidity(date,startTime,endTime):
-                    break
-                else:
-                    print("-- Please enter a valid date -- ")
-            db.execute_query("UPDATE PTsession SET session_date = %s, start_time = %s, end_time = %s WHERE session_id = %s;",(date,startTime,endTime,sessionID))
-            print(f"PT Session Reschedule successfully to: {date} from {startTime} to {endTime}")
+            session_exists = db.execute_query("SELECT COUNT(*) FROM PTsession WHERE session_id = %s AND member_id = %s;", (sessionID, member_id), fetch=True)
+            if session_exists[0][0] == 0:
+                print(f"No sessions were found with the specified session ID under Member ID: {member_id}.")
+            else:
+                while True:
+                    trainerID = db.execute_query("SELECT trainer_id FROM ptsession WHERE session_id = %s;", (sessionID,), fetch=True)
+                    trainerID = trainerID[0][0]
+                    date = input("Enter the date you would like to reschedule to (yyyy-mm-dd): ")
+                    startTime = input("Enter the start time you would like to reschedule to (ex: 09:00): ")
+                    endTime = input("Enter the end time you would like to reschedule to (ex: 10:00): ")
+                    if checkDateTimeValidity(date,startTime,endTime) and trainer_is_available(trainerID,date,startTime,endTime):
+                        break
+                    else:
+                        print("-- Please enter a valid date -- ")
+                db.execute_query("UPDATE PTsession SET session_date = %s, start_time = %s, end_time = %s WHERE session_id = %s;",(date,startTime,endTime,sessionID))
+                print(f"PT Session Reschedule successfully to: {date} from {startTime} to {endTime}")
 
         elif selection == "3":
             sessionID = input("Enter the session ID of the session you would like to cancel: ")
@@ -131,13 +137,7 @@ def print_trainers():
         print("---------------------")
 
 def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
-    trainer = db.execute_query(
-        "SELECT * FROM PTSession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
-        (trainer_id, session_date, start_time, start_time, end_time, end_time),
-        fetch=True,
-    )
-    trainerHours = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",(trainer_id, session_date, start_time, start_time, end_time, end_time),fetch=True)
-    if trainer or not trainerHours:
+    if not(checkDateTimeValidity(session_date,start_time,end_time) and trainer_is_available(trainer_id, session_date, start_time, end_time)):
         print("Trainer not available at the requested time.")
         return
     db.execute_query(
@@ -146,6 +146,19 @@ def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
     )
     print("Session scheduled successfully.")
 
+def trainer_is_available(trainer_id, session_date, start_time, end_time):
+    trainer = db.execute_query(
+        "SELECT * FROM PTSession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
+        (trainer_id, session_date, start_time, start_time, end_time, end_time),
+        fetch=True,
+    )
+    trainerHours = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",(trainer_id, session_date, start_time, start_time, end_time, end_time),fetch=True)
+
+    if trainer or not trainerHours:
+        return False
+    else:
+        return True
+    
 
 def set_trainer_availability(trainer_id, date, sTime, eTime):
     if not checkDateTimeValidity(date, sTime, eTime):
