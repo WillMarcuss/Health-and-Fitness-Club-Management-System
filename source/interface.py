@@ -23,11 +23,25 @@ def member_interface(member_id):
             while True:
                 selection = input("\n1. View Fitness Goals\n2. View Exercise Routines\n3. Manage PT Sessions\n4. View My Group Fitness Classes\n5. Exit\nEnter Choice: ")
                 if selection == "5":
-                    break;
+                    break
                 fs.display_member_dashboard(member_id,selection)
             pass
         elif choice == "3":
-            # Assume schedule_session function exists and is implemented correctly
+            print("\n---- Schedule PT Session ----")
+            while True:
+                selection = input("\n1. View Trainers\n2. Schedule Session\n3. Exit\nEnter Choice: ")
+                if selection == "1":
+                    fs.print_trainers()
+                elif selection == "2":
+                    trainerID = input("Enter the trainer ID you would like to schedule with: ")
+                    date = input("Enter the date you would like to schedule (yyyy-mm-dd): ")
+                    sTime = input("Enter the start time: ")
+                    eTime = input("Enter the end time: ")
+                    fs.schedule_session(member_id,trainerID,date,sTime,eTime)
+                elif selection == "3":
+                    break
+                
+
             pass
         elif choice == "4":
             # Assume register_for_class function exists and is implemented correctly

@@ -107,21 +107,39 @@ def manage_pt_session(member_id):
         
         elif selection == "4":
             break
-        
+
+def print_trainers():
+    trainers_availability = db.execute_query(
+    """
+    SELECT t.*, ta.date, ta.start_time, ta.end_time
+    FROM trainer t
+    LEFT JOIN traineravailability ta ON t.trainer_id = ta.trainer_id
+    """,
+    fetch=True
+)
+
+    # Display the results
+    for row in trainers_availability:
+        print("\nTrainer ID:", row['trainer_id'])
+        print("Trainer Name:", row['first_name'],row['last_name'])
+        print("Availability Date:", row['date'])
+        print("Start Time:", row['start_time'])
+        print("End Time:", row['end_time'])
+        print("---------------------")
 
 def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
     trainer = db.execute_query(
         "SELECT * FROM PTSession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
         (trainer_id, session_date, start_time, start_time, end_time, end_time),
         fetch=True,
-    )[0]
-    if trainer:
+    )
+    trainerHours = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",(trainer_id, session_date, start_time, start_time, end_time, end_time),fetch=True)
+    if trainer or not trainerHours:
         print("Trainer not available at the requested time.")
         return
     db.execute_query(
         "INSERT INTO PTSession (session_date, start_time, end_time, trainer_id, member_id) VALUES (%s, %s, %s, %s, %s);",
-        (session_date, start_time, end_time, trainer_id, member_id),
-        fetch=True,
+        (session_date, start_time, end_time, trainer_id, member_id)
     )
     print("Session scheduled successfully.")
 
