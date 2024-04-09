@@ -47,7 +47,7 @@ def update_member_profile(
     )
 
 
-def display_member_dashboard(member_id):
+def display_member_dashboard(member_id,selection):
     routines = db.execute_query(
         "SELECT * FROM ExerciseRoutines WHERE member_id = %s;",
         (member_id,),
@@ -58,8 +58,16 @@ def display_member_dashboard(member_id):
         (member_id,),
         fetch=True,
     )[0]["goals"]
-    print(f"Exercise Routines: {routines}")
-    print(f"Fitness Goals: {goals}")
+    if selection == "1":
+        print(f"Fitness Goals: {goals}")
+    elif selection == "2":
+        print(f"Exercise Routines: {routines}")
+    elif selection == "3":
+        # Implement Manage PT Sessions
+        print('')
+    elif selection == "4":
+        # Print fitness classes
+        print("")
 
 
 def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
