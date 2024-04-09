@@ -39,14 +39,12 @@ def trainer_interface(trainer_id):
         print("\n1. Set Availability\n2. View Member Profiles\n3. Logout")
         choice = input("Enter choice: ")
         if choice == "1":
-            # Assume set_trainer_availability function exists and is implemented correctly
             print("\n---- Set Your Availability ----")
             date = input("Date (yyyy-mm-dd): ")
             start_time = input("Start Time (hh:mm)")
             end_time = input("End Time (hh:mm)")
             fs.set_trainer_availability(trainer_id, date, start_time, end_time)
         elif choice == "2":
-            # Assume view_member_profile_by_name function exists and is implemented correctly
             print("\n---- Search Member Profiles ----")
             fName = input("Member's First Name: ")
             lName = input("Member's Last Name: ")

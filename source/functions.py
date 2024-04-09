@@ -176,87 +176,70 @@ def monitorEquipmentMaintenance():
         print("Invalid option.")
 
 def set_trainer_availability(trainer_id, date, sTime, eTime):
-    # First, check if the date and time formats are valid
     if not checkDateTimeValidity(date, sTime, eTime):
-        print("Invalid date or time formats.")
-        return False
+        print("\nInvalid date or time formats.")
+        return
 
-    # Fetch all existing time slots for the same trainer and date
     fetch_query = """
     SELECT start_time, end_time FROM TrainerAvailability
     WHERE trainer_id = %s AND date = %s
     """
     existing_slots = db.execute_query(fetch_query, (trainer_id, date), fetch=True)
 
-    # Check for unacceptable time overlaps
     for slot in existing_slots:
         if not is_acceptable_overlap(
             sTime, eTime, slot["start_time"], slot["end_time"]
         ):
-            print("Unacceptable overlap detected with existing trainer availability.")
-            return False
+            print("\nUnacceptable overlap detected with existing trainer availability.")
+            return
 
-    # Insert the new availability into the TrainerAvailability table
     insert_query = """
     INSERT INTO TrainerAvailability (trainer_id, date, start_time, end_time)
     VALUES (%s, %s, %s, %s)
     """
     db.execute_query(insert_query, (trainer_id, date, sTime, eTime))
-    print("Trainer availability successfully added.")
-    return True
+    print("\nTrainer availability successfully added.")
 
 
 def checkDateTimeValidity(date, sTime, eTime):
     try:
-        # Check if the date, start time, and end time are in the correct format
-        datetime.datetime.strptime(date, "%Y-%m-%d")  # Date in 'yyyy-mm-dd' format
-        datetime.datetime.strptime(sTime, "%H:%M")  # Start time in 'hh:mm' format
-        datetime.datetime.strptime(eTime, "%H:%M")  # End time in 'hh:mm' format
+        datetime.datetime.strptime(date, "%Y-%m-%d")
+        datetime.datetime.strptime(sTime, "%H:%M")
+        datetime.datetime.strptime(eTime, "%H:%M")
 
-        # Combine date and time to create datetime objects
         start_datetime = datetime.datetime.strptime(f"{date} {sTime}", "%Y-%m-%d %H:%M")
         end_datetime = datetime.datetime.strptime(f"{date} {eTime}", "%Y-%m-%d %H:%M")
 
-        # Check if the end time is after the start time
         return end_datetime > start_datetime
     except ValueError:
-        # Return False if there is a parsing error (invalid format)
         return False
 
 
 def is_acceptable_overlap(new_start, new_end, existing_start, existing_end):
-    # Convert string times to datetime.time objects for comparison
     new_start = datetime.datetime.strptime(new_start, "%H:%M").time()
     new_end = datetime.datetime.strptime(new_end, "%H:%M").time()
-
-    # Check if new time slot overlaps with the existing one
     return new_end <= existing_start or new_start >= existing_end
 
 
 def search_for_member(fName=None, lName=None):
-    # Check if the strings are not None and not just empty or spaces
     if (fName is None or fName.strip() == "") and (
         lName is None or lName.strip() == ""
     ):
         return None
 
-    # Start building the query with the condition that exists
     query = "SELECT * FROM Member WHERE "
     args = []
 
     if fName is not None and fName.strip() != "":
-        # Add condition for first name using LOWER for case-insensitive comparison
         query += "LOWER(first_name) = LOWER(%s)"
-        args.append(fName.strip())  # Use strip() to remove any extra spaces
+        args.append(fName.strip())
 
     if lName is not None and lName.strip() != "":
         if args:
-            # Add 'AND' only if the first name condition is also included
             query += " AND "
-        # Add condition for last name using LOWER for case-insensitive comparison
-        query += "LOWER(last_name) = LOWER(%s)"
-        args.append(lName.strip())  # Use strip() to remove any extra spaces
 
-    # Execute the query and fetch the results
+        query += "LOWER(last_name) = LOWER(%s)"
+        args.append(lName.strip())
+
     results = db.execute_query(query, args, fetch=True)
     return results
