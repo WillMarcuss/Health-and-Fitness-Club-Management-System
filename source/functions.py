@@ -183,7 +183,7 @@ def set_trainer_availability(trainer_id, date, sTime, eTime):
 
     # Fetch all existing time slots for the same trainer and date
     fetch_query = """
-    SELECT start_time, end_time FROM trainer_availability
+    SELECT start_time, end_time FROM TrainerAvailability
     WHERE trainer_id = %s AND date = %s
     """
     existing_slots = db.execute_query(fetch_query, (trainer_id, date), fetch=True)
@@ -196,9 +196,9 @@ def set_trainer_availability(trainer_id, date, sTime, eTime):
             print("Unacceptable overlap detected with existing trainer availability.")
             return False
 
-    # Insert the new availability into the trainer_availability table
+    # Insert the new availability into the TrainerAvailability table
     insert_query = """
-    INSERT INTO trainer_availability (trainer_id, date, start_time, end_time)
+    INSERT INTO TrainerAvailability (trainer_id, date, start_time, end_time)
     VALUES (%s, %s, %s, %s)
     """
     db.execute_query(insert_query, (trainer_id, date, sTime, eTime))
@@ -228,20 +228,35 @@ def is_acceptable_overlap(new_start, new_end, existing_start, existing_end):
     # Convert string times to datetime.time objects for comparison
     new_start = datetime.datetime.strptime(new_start, "%H:%M").time()
     new_end = datetime.datetime.strptime(new_end, "%H:%M").time()
-    existing_start = datetime.datetime.strptime(existing_start, "%H:%M").time()
-    existing_end = datetime.datetime.strptime(existing_end, "%H:%M").time()
 
     # Check if new time slot overlaps with the existing one
-    return new_start < existing_end and new_end > existing_start
+    return new_end <= existing_start or new_start >= existing_end
 
 
-def search_for_member(fName, lName):
-    # SQL query to find members by first name and last name
-    query = """
-    SELECT * FROM Member
-    WHERE first_name = %s AND last_name = %s
-    """
-    args = (fName, lName)
+def search_for_member(fName=None, lName=None):
+    # Check if the strings are not None and not just empty or spaces
+    if (fName is None or fName.strip() == "") and (
+        lName is None or lName.strip() == ""
+    ):
+        return None
+
+    # Start building the query with the condition that exists
+    query = "SELECT * FROM Member WHERE "
+    args = []
+
+    if fName is not None and fName.strip() != "":
+        # Add condition for first name using LOWER for case-insensitive comparison
+        query += "LOWER(first_name) = LOWER(%s)"
+        args.append(fName.strip())  # Use strip() to remove any extra spaces
+
+    if lName is not None and lName.strip() != "":
+        if args:
+            # Add 'AND' only if the first name condition is also included
+            query += " AND "
+        # Add condition for last name using LOWER for case-insensitive comparison
+        query += "LOWER(last_name) = LOWER(%s)"
+        args.append(lName.strip())  # Use strip() to remove any extra spaces
+
     # Execute the query and fetch the results
     results = db.execute_query(query, args, fetch=True)
     return results
