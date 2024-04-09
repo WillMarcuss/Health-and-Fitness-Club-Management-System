@@ -18,10 +18,13 @@ def member_interface(member_id):
             weight = input("Weight (kg): ")
             fs.update_member_profile(member_id, first_name, last_name, height, weight)
         elif choice == "2":
-            print("---- Member Dashboard ----")
+            print("\n---- Member Dashboard ----")
             print("Member: ",member_id)
-            selection = input("\n1. View Fitness Goals\n2. View Exercise Routines\n3. Manage PT Sessions\n4.View My Group Fitness Classes\n5. Exit\nEnter Choice: ")
-            fs.display_member_dashboard(member_id,selection)
+            while True:
+                selection = input("\n1. View Fitness Goals\n2. View Exercise Routines\n3. Manage PT Sessions\n4. View My Group Fitness Classes\n5. Exit\nEnter Choice: ")
+                if selection == "5":
+                    break;
+                fs.display_member_dashboard(member_id,selection)
             pass
         elif choice == "3":
             # Assume schedule_session function exists and is implemented correctly
