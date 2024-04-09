@@ -1,6 +1,7 @@
 import functions as fs
 import datetime
 
+
 # Member interface
 def member_interface(member_id):
     print(f"\nWelcome Member {member_id}")
@@ -39,14 +40,23 @@ def trainer_interface(trainer_id):
         choice = input("Enter choice: ")
         if choice == "1":
             # Assume set_trainer_availability function exists and is implemented correctly
-            print("---- Set Your Availability ----")
+            print("\n---- Set Your Availability ----")
             date = input("Date (yyyy-mm-dd): ")
             start_time = input("Start Time (hh:mm)")
             end_time = input("End Time (hh:mm)")
-            fs.set_trainer_availability(date, start_time, end_time)
+            fs.set_trainer_availability(trainer_id, date, start_time, end_time)
         elif choice == "2":
             # Assume view_member_profile_by_name function exists and is implemented correctly
-            pass
+            print("\n---- Search Member Profiles ----")
+            fName = input("Member's First Name: ")
+            lName = input("Member's Last Name: ")
+            results = fs.search_for_member(fName, lName)
+            if results is not None:
+                print("\n---- Showing Matching Members ----")
+                for member in results:
+                    print(
+                        f"\n{member['first_name']} {member['last_name']} -- Attributes: Height: {member['height']} cm, Weight: {member['weight']} kg"
+                    )
         elif choice == "3":
             break
         else:

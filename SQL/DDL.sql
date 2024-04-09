@@ -15,7 +15,7 @@ CREATE TABLE Trainer (
 );
 
 -- Creating the Trainer Availability table
-CREATE TABLE Trainer_availability (
+CREATE TABLE TrainerAvailability (
     availability_id SERIAL PRIMARY KEY,
     trainer_id INT NOT NULL,
     date DATE NOT NULL,
@@ -26,11 +26,11 @@ CREATE TABLE Trainer_availability (
         REFERENCES trainer (trainer_id)
         ON DELETE CASCADE,
     CONSTRAINT check_time
-        CHECK (end_time > start_time),
+        CHECK (end_time > start_time)
 );
 
-CREATE INDEX idx_trainer_date
-    ON trainer_availability (trainer_id, date);
+CREATE INDEX idxTrainerDate
+    ON TrainerAvailability (trainer_id, date);
 
 
 -- Creating the Billing table
