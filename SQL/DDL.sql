@@ -15,7 +15,7 @@ CREATE TABLE Trainer (
 );
 
 -- Creating the Trainer Availability table
-CREATE TABLE trainer_availability (
+CREATE TABLE Trainer_availability (
     availability_id SERIAL PRIMARY KEY,
     trainer_id INT NOT NULL,
     date DATE NOT NULL,
@@ -27,8 +27,6 @@ CREATE TABLE trainer_availability (
         ON DELETE CASCADE,
     CONSTRAINT check_time
         CHECK (end_time > start_time),
-    CONSTRAINT unique_trainer_date_start_time
-        UNIQUE (trainer_id, date, start_time)
 );
 
 CREATE INDEX idx_trainer_date
