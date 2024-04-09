@@ -1,6 +1,6 @@
 import functions as fs
-import datetime
-
+import trainerInterface as trainer
+import memberInterface as member
 
 # Member interface
 def member_interface(member_id):
@@ -39,22 +39,9 @@ def trainer_interface(trainer_id):
         print("\n1. Set Availability\n2. View Member Profiles\n3. Logout")
         choice = input("Enter choice: ")
         if choice == "1":
-            print("\n---- Set Your Availability ----")
-            date = input("Date (yyyy-mm-dd): ")
-            start_time = input("Start Time (hh:mm)")
-            end_time = input("End Time (hh:mm)")
-            fs.set_trainer_availability(trainer_id, date, start_time, end_time)
+            trainer.setAvailability(trainer_id)
         elif choice == "2":
-            print("\n---- Search Member Profiles ----")
-            fName = input("Member's First Name: ")
-            lName = input("Member's Last Name: ")
-            results = fs.search_for_member(fName, lName)
-            if results is not None:
-                print("\n---- Showing Matching Members ----")
-                for member in results:
-                    print(
-                        f"\n{member['first_name']} {member['last_name']} -- Attributes: Height: {member['height']} cm, Weight: {member['weight']} kg"
-                    )
+            trainer.searchForMember()
         elif choice == "3":
             break
         else:
@@ -116,12 +103,7 @@ def main():
             else:
                 print("\nEmployee ID does not exist. Please try again.")
         elif choice == "4":
-            print("Register New Member")
-            first_name = input("First name: ")
-            last_name = input("Last name: ")
-            height = input("Height (cm): ")
-            weight = input("Weight (kg): ")
-            fs.register_member(first_name, last_name, height, weight)
+           member.register()
         elif choice == "5":
             print("\nGoodbye!")
             break
