@@ -18,7 +18,7 @@ def member_interface(member_id):
             weight = input("Weight (kg): ")
             fs.update_member_profile(member_id, first_name, last_name, height, weight)
         elif choice == "2":
-            # Assume display_member_dashboard function exists and is implemented correctly
+            
             pass
         elif choice == "3":
             # Assume schedule_session function exists and is implemented correctly
