@@ -1,7 +1,7 @@
 import dbController as db
+import datetime
 
 
-# Check if id exists
 def check_id_exists(id_value, table, id_column):
     result = db.execute_query(
         f"SELECT EXISTS(SELECT 1 FROM {table} WHERE {id_column} = %s);",
@@ -11,13 +11,7 @@ def check_id_exists(id_value, table, id_column):
     return result[0]["exists"]
 
 
-# Register a new member
-def register_member():
-    print("Register New Member")
-    first_name = input("First name: ")
-    last_name = input("Last name: ")
-    height = input("Height (cm): ")
-    weight = input("Weight (kg): ")
+def register_member(first_name, last_name, height, weight):
     member_id = db.execute_query(
         "INSERT INTO member (first_name, last_name, height, weight) VALUES (%s, %s, %s, %s) RETURNING member_id;",
         (first_name, last_name, float(height), float(weight)),
@@ -28,7 +22,6 @@ def register_member():
     )
 
 
-# 2. Profile Management
 def update_member_profile(
     member_id, first_name=None, last_name=None, height=None, weight=None
 ):
@@ -54,7 +47,6 @@ def update_member_profile(
     )
 
 
-# 3. Dashboard Display
 def display_member_dashboard(member_id):
     routines = db.execute_query(
         "SELECT * FROM ExerciseRoutines WHERE member_id = %s;",
@@ -70,7 +62,6 @@ def display_member_dashboard(member_id):
     print(f"Fitness Goals: {goals}")
 
 
-# 4. Schedule Management
 def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
     trainer = db.execute_query(
         "SELECT * FROM PTSession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
@@ -183,3 +174,74 @@ def monitorEquipmentMaintenance():
     
     else:
         print("Invalid option.")
+
+def set_trainer_availability(trainer_id, date, sTime, eTime):
+    # First, check if the date and time formats are valid
+    if not checkDateTimeValidity(date, sTime, eTime):
+        print("Invalid date or time formats.")
+        return False
+
+    # Fetch all existing time slots for the same trainer and date
+    fetch_query = """
+    SELECT start_time, end_time FROM trainer_availability
+    WHERE trainer_id = %s AND date = %s
+    """
+    existing_slots = db.execute_query(fetch_query, (trainer_id, date), fetch=True)
+
+    # Check for unacceptable time overlaps
+    for slot in existing_slots:
+        if not is_acceptable_overlap(
+            sTime, eTime, slot["start_time"], slot["end_time"]
+        ):
+            print("Unacceptable overlap detected with existing trainer availability.")
+            return False
+
+    # Insert the new availability into the trainer_availability table
+    insert_query = """
+    INSERT INTO trainer_availability (trainer_id, date, start_time, end_time)
+    VALUES (%s, %s, %s, %s)
+    """
+    db.execute_query(insert_query, (trainer_id, date, sTime, eTime))
+    print("Trainer availability successfully added.")
+    return True
+
+
+def checkDateTimeValidity(date, sTime, eTime):
+    try:
+        # Check if the date, start time, and end time are in the correct format
+        datetime.datetime.strptime(date, "%Y-%m-%d")  # Date in 'yyyy-mm-dd' format
+        datetime.datetime.strptime(sTime, "%H:%M")  # Start time in 'hh:mm' format
+        datetime.datetime.strptime(eTime, "%H:%M")  # End time in 'hh:mm' format
+
+        # Combine date and time to create datetime objects
+        start_datetime = datetime.datetime.strptime(f"{date} {sTime}", "%Y-%m-%d %H:%M")
+        end_datetime = datetime.datetime.strptime(f"{date} {eTime}", "%Y-%m-%d %H:%M")
+
+        # Check if the end time is after the start time
+        return end_datetime > start_datetime
+    except ValueError:
+        # Return False if there is a parsing error (invalid format)
+        return False
+
+
+def is_acceptable_overlap(new_start, new_end, existing_start, existing_end):
+    # Convert string times to datetime.time objects for comparison
+    new_start = datetime.datetime.strptime(new_start, "%H:%M").time()
+    new_end = datetime.datetime.strptime(new_end, "%H:%M").time()
+    existing_start = datetime.datetime.strptime(existing_start, "%H:%M").time()
+    existing_end = datetime.datetime.strptime(existing_end, "%H:%M").time()
+
+    # Check if new time slot overlaps with the existing one
+    return new_start < existing_end and new_end > existing_start
+
+
+def search_for_member(fName, lName):
+    # SQL query to find members by first name and last name
+    query = """
+    SELECT * FROM Member
+    WHERE first_name = %s AND last_name = %s
+    """
+    args = (fName, lName)
+    # Execute the query and fetch the results
+    results = db.execute_query(query, args, fetch=True)
+    return results
