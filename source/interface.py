@@ -1,4 +1,5 @@
 import functions as fs
+import datetime
 
 
 # Member interface
@@ -10,8 +11,12 @@ def member_interface(member_id):
         )
         choice = input("Enter choice: ")
         if choice == "1":
-            # Assume update_member_profile function exists and is implemented correctly
-            pass
+            print("---- Update Your Profile ----")
+            first_name = input("First name: ")
+            last_name = input("Last name: ")
+            height = input("Height (cm): ")
+            weight = input("Weight (kg): ")
+            fs.update_member_profile(member_id, first_name, last_name, height, weight)
         elif choice == "2":
             # Assume display_member_dashboard function exists and is implemented correctly
             pass
@@ -34,11 +39,22 @@ def trainer_interface(trainer_id):
         print("\n1. Set Availability\n2. View Member Profiles\n3. Logout")
         choice = input("Enter choice: ")
         if choice == "1":
-            # Assume set_trainer_availability function exists and is implemented correctly
-            pass
+            print("\n---- Set Your Availability ----")
+            date = input("Date (yyyy-mm-dd): ")
+            start_time = input("Start Time (hh:mm)")
+            end_time = input("End Time (hh:mm)")
+            fs.set_trainer_availability(trainer_id, date, start_time, end_time)
         elif choice == "2":
-            # Assume view_member_profile_by_name function exists and is implemented correctly
-            pass
+            print("\n---- Search Member Profiles ----")
+            fName = input("Member's First Name: ")
+            lName = input("Member's Last Name: ")
+            results = fs.search_for_member(fName, lName)
+            if results is not None:
+                print("\n---- Showing Matching Members ----")
+                for member in results:
+                    print(
+                        f"\n{member['first_name']} {member['last_name']} -- Attributes: Height: {member['height']} cm, Weight: {member['weight']} kg"
+                    )
         elif choice == "3":
             break
         else:
@@ -100,7 +116,12 @@ def main():
             else:
                 print("\nEmployee ID does not exist. Please try again.")
         elif choice == "4":
-            fs.register_member()
+            print("Register New Member")
+            first_name = input("First name: ")
+            last_name = input("Last name: ")
+            height = input("Height (cm): ")
+            weight = input("Weight (kg): ")
+            fs.register_member(first_name, last_name, height, weight)
         elif choice == "5":
             print("\nGoodbye!")
             break
