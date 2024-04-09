@@ -46,7 +46,7 @@ def update_member_profile(
         fetch=True,
     )
 
-
+#Member Dashboard
 def display_member_dashboard(member_id,selection):
     routines = db.execute_query(
         "SELECT * FROM ExerciseRoutines WHERE member_id = %s;",
