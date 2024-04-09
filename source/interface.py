@@ -16,7 +16,9 @@ def member_interface(member_id):
             last_name = input("Last name: ")
             height = input("Height (cm): ")
             weight = input("Weight (kg): ")
-            fs.update_member_profile(member_id, first_name, last_name, height, weight)
+            goals = input("Fitness Goals: ")
+            routines = input("Exercise Routines: ")
+            fs.update_member_profile(member_id, first_name, last_name, height, weight,goals,routines)
         elif choice == "2":
             print("\n---- Member Dashboard ----")
             print("Member: ",member_id)
@@ -44,7 +46,15 @@ def member_interface(member_id):
 
             pass
         elif choice == "4":
-            # Assume register_for_class function exists and is implemented correctly
+            print("\n---- Register for Group Fitness Classes ----")
+            while True:
+                selection = input("\n1. View Classes\n2. Register for Classes\n3. Exit\nEnter Choice: ")
+                if selection == "1":
+                    fs.print_classes()
+                elif selection == "2":
+                    fs.register_for_class(member_id)
+                elif selection == "3":
+                    break
             pass
         elif choice == "5":
             break

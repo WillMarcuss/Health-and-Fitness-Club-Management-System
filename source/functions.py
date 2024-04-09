@@ -11,19 +11,20 @@ def check_id_exists(id_value, table, id_column):
     return result[0]["exists"]
 
 
-def register_member(first_name, last_name, height, weight):
+def register_member(first_name, last_name, height, weight,goals,routines):
     member_id = db.execute_query(
         "INSERT INTO member (first_name, last_name, height, weight) VALUES (%s, %s, %s, %s) RETURNING member_id;",
-        (first_name, last_name, float(height), float(weight)),
-        fetch=True,
-    )[0]["member_id"]
+        (first_name, last_name, float(height), float(weight)),fetch=True)[0]["member_id"]
+    
+    db.execute_query("INSERT INTO FitnessGoals (member_id,goals) VALUES (%s, %s)",(member_id,goals))
+    db.execute_query("INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",(member_id,routines))
     print(
         f"Registered successfully. Your member ID is {member_id}. Please remember it for login."
     )
 
 
 def update_member_profile(
-    member_id, first_name=None, last_name=None, height=None, weight=None
+    member_id, first_name=None, last_name=None, height=None, weight=None, fitnessgoals = None, exerciseroutines = None
 ):
     fields = []
     values = []
@@ -39,12 +40,14 @@ def update_member_profile(
     if weight:
         fields.append("weight = %s")
         values.append(weight)
+    if fitnessgoals:
+        db.execute_query("UPDATE FitnessGoals SET goals = %s WHERE member_id = %s;",(fitnessgoals,member_id))
+    if exerciseroutines:
+        db.execute_query("UPDATE ExerciseRoutines SET routines = %s WHERE member_id = %s;",(exerciseroutines,member_id))
     values.append(member_id)
     db.execute_query(
         "UPDATE Member SET " + ", ".join(fields) + " WHERE member_id = %s;",
-        tuple(values),
-        fetch=True,
-    )
+        tuple(values),)
 
 #Member Dashboard
 def display_member_dashboard(member_id,selection):
@@ -71,7 +74,7 @@ def display_member_dashboard(member_id,selection):
         manage_pt_session(member_id)
     elif selection == "4":
         for fitclass in fitnessClasses:
-            print(f"\nFitness Class: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}")
+            print(f"\nFitness Class ID {fitclass[0]}: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}")
 
 def manage_pt_session(member_id):
     print("\n---- Manage PT Sessions ----")
@@ -212,3 +215,22 @@ def search_for_member(fName=None, lName=None):
 
     results = db.execute_query(query, args, fetch=True)
     return results
+
+
+def print_classes():
+    classes = db.execute_query("SELECT * FROM FitnessClass",fetch=True)
+    for fitclass in classes:
+         print(f"\nFitness Class ID {fitclass[0]}: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}")
+
+def register_for_class(member_id):
+    classes = db.execute_query("SELECT class_id FROM FitnessClass",fetch=True)
+    classes = [str(sublist[0]) for sublist in classes]
+    classID = input("\nEnter the class ID you would like to register for:")
+
+    isRegistered = db.execute_query("SELECT * FROM EnrolledMembers WHERE member_id = %s AND class_id = %s;", (member_id, classID), fetch=True)
+
+    if classID in classes and not isRegistered:
+        db.execute_query("INSERT INTO EnrolledMembers (class_id,member_id) VALUES (%s, %s);", (classID,member_id))
+        db.execute_query("UPDATE fitnessclass SET num_participants = num_participants + 1 WHERE class_id = %s;", (classID,))
+    else:
+        print("Class not available or already registered!")
