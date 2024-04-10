@@ -31,13 +31,13 @@ INSERT INTO ExerciseRoutines (member_id, routines) VALUES
 
 -- Insert sample data into PTSession table
 INSERT INTO PTSession (session_date, start_time, end_time, trainer_id, member_id) VALUES
-('2024-04-15', '10:00:00', '11:00:00', 1, 1),
-('2024-04-16', '11:00:00', '12:00:00', 2, 2);
+('2024-04-10', '10:00:00', '11:00:00', 1, 1),
+('2024-04-11', '11:00:00', '12:00:00', 2, 2);
 
 -- Insert sample data into FitnessClass table
 INSERT INTO FitnessClass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES
-('Yoga Basics', '2024-04-20', '08:00:00', '09:30:00', 5, 20, 1),
-('Pilates Intro', '2024-04-20', '10:00:00', '11:30:00', 3, 15, 2);
+('Yoga Basics', '2024-04-10', '08:00:00', '09:30:00', 5, 20, 1),
+('Pilates Intro', '2024-04-11', '10:00:00', '11:30:00', 3, 15, 2);
 
 -- Insert sample data into EnrolledMembers table
 INSERT INTO EnrolledMembers (class_id, member_id) VALUES
