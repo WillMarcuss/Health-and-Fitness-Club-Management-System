@@ -307,3 +307,50 @@ def updateClassSchedule():
         print("\nInvalid choice, please try again.")
 
 # 4. Process Payments
+
+def billingsAndPayment():
+    print("\n--- Billings and Payment ---")
+    print("1. View Billings")
+    print("2. Process Payments")
+    print("3. Exit")
+    choice = input("Enter Choice: ")
+
+    if choice == '1':
+        while True:
+            print("\n--- Billings ---")
+            print("1. View Unpaid Billings")
+            print("2. View Paid Billings")
+            print("3. Exit")
+            billing_choice = input("Enter Choice: ")
+
+            if billing_choice == '1':
+                unpaid_billings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Pending',), fetch=True)
+                print("\n--- Unpaid Billings ---")
+                for billing in unpaid_billings:
+                    print(f"Billing ID: {billing['billing_id']}, Amount: {billing['amount']}, Date: {billing['date']}")
+                
+            elif billing_choice == '2':
+                paid_billings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Paid',), fetch=True)
+                print("\n--- Paid Billings ---")
+                for billing in paid_billings:
+                    print(f"Billing ID: {billing['billing_id']}, Amount: {billing['amount']}, Date: {billing['date']}")
+                
+            elif billing_choice == '3':
+                break
+            else:
+                print("Invalid option.")
+    
+    elif choice == '2':
+        billing_id = input("\nEnter Billing ID to process payment: ")
+
+        billing = db.execute_query("SELECT * FROM billing WHERE billing_id = %s;", (billing_id,), fetch=True)
+        if billing:
+            db.execute_query("UPDATE billing SET status = %s WHERE billing_id = %s;", ('Paid', billing_id,), fetch=False)
+            print(f"Billing ID {billing_id} has been charged and is now paid.")
+        else:
+            print("Billing ID does not exist.")
+
+    elif choice == '3':
+        return
+    else:
+        print("Invalid option.")

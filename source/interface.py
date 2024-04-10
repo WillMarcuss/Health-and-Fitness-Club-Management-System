@@ -61,10 +61,10 @@ def admin_interface():
         elif choice == "2":
             fs.monitorEquipmentMaintenance()
         elif choice == "3":
-            # Assume update_class_schedule function exists and is implemented correctly
+            fs.updateClassSchedule()
             pass
         elif choice == "4":
-            # Assume process_payment function exists and is implemented correctly
+            fs.billingsAndPayment()
             pass
         elif choice == "5":
             break
