@@ -172,8 +172,8 @@ def trainer_is_available(trainer_id, session_date, start_time, end_time):
         fetch=True,
     )
     trainerHours = db.execute_query(
-        "SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
-        (trainer_id, session_date, start_time, start_time, end_time, end_time),
+        "SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND (%s >= start_time AND %s <= end_time);",
+        (trainer_id, session_date, start_time, end_time),
         fetch=True,
     )
 
