@@ -72,11 +72,14 @@ def schedulePTSessions(member_id):
                     print("End Time: ", row["end_time"])
                     print("---------------------")
         elif selection == "2":
-            trainerID = input("Enter the trainer ID you would like to schedule with: ")
-            date = input("Enter the date you would like to schedule (yyyy-mm-dd): ")
-            sTime = input("Enter the start time: ")
-            eTime = input("Enter the end time: ")
-            fs.schedule_session(member_id, trainerID, date, sTime, eTime)
+            try:
+                trainerID = input("Enter the trainer ID you would like to schedule with: ")
+                date = input("Enter the date you would like to schedule (yyyy-mm-dd): ")
+                sTime = input("Enter the start time: ")
+                eTime = input("Enter the end time: ")
+                fs.schedule_session(member_id, trainerID, date, sTime, eTime)
+            except:
+                print("Please enter valid Trainer ID")
         elif selection == "3":
             break
 
@@ -129,8 +132,13 @@ def managePTSessions(member_id):
 
 
 def reschedulePTSession(member_id):
+
     session_id = input("\nEnter the session ID in which you would like to reschedule: ")
-    session_exists = fs.checkPTSessionExists(member_id, session_id)
+    try:
+        session_exists = fs.checkPTSessionExists(member_id, session_id)
+    except:
+        print("Not a valid session ID, please try again")
+        return
     if session_exists[0][0] == 0:
         print(
             f"No sessions were found with the specified session ID under Member ID: {member_id}."
@@ -162,7 +170,11 @@ def reschedulePTSession(member_id):
 
 def cancelSession(member_id):
     session_id = input("Enter the session ID of the session you would like to cancel: ")
-    session_exists = fs.checkPTSessionExists(member_id, session_id)
+    try:
+        session_exists = fs.checkPTSessionExists(member_id, session_id)
+    except:
+         print("Not a valid session ID, please try again")
+         return
     if session_exists[0][0] == 0:
         print(
             f"No sessions were found with the specified session ID under Member ID: {member_id}."
