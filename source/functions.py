@@ -263,210 +263,91 @@ def search_for_member(fName=None, lName=None):
 
 
 #Admin Functions
-# 1. Manage Room Bookings
-def manageRoomBookings():
-    print("\n--- Manage Room Bookings ---\n")
-    print("1. View Room Bookings")
-    print("2. Update Room Booking")
-    print("3. Exit\n")
-    choice = input("Enter Choice: ")
-    
-    if choice == '1':
-        print('\n====================================================')
-        print('\nAll scheduled room bookings (starting from earliest date):\n')
-        roomBookings = db.execute_query("SELECT b.booking_id, b.room_name, f.*, t.first_name, t.last_name FROM bookings b JOIN fitnessclass f ON b.class_id = f.class_id JOIN trainer t ON f.trainer_id = t.trainer_id ORDER BY f.class_date ASC", (), fetch=True)
+
+def getRoomBookings():
+
+    roomBookings = db.execute_query("SELECT b.booking_id, b.room_name, f.*, t.first_name, t.last_name FROM bookings b JOIN fitnessclass f ON b.class_id = f.class_id JOIN trainer t ON f.trainer_id = t.trainer_id ORDER BY f.class_date ASC", (), fetch=True)
         
-        for roomBooking in roomBookings:
+    return roomBookings
 
-            print("Room: " + roomBooking['room_name'] + '\n')
+def updateRoomBooking(bookingID, newRoomName):
+    booking = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
 
-            classDetails = roomBooking[2:]
-            print(f"Class: {classDetails[1]}")
-            print(f"Date: {classDetails[2]}")
-            print(f"Start Time: {classDetails[3]}")
-            print(f"End Time: {classDetails[4]}")
-            
-            trainerDetails = roomBooking[10:]
-            print(f"Trainer: {trainerDetails[0]} {trainerDetails[1]}\n")
-        
-        print('====================================================')
-
-    elif choice == '2':
-        bookingID = input("\nEnter Booking ID: ")
-        newRoomName = input("Enter new name for the room: ")
-
-        booking = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
-
-        if booking:
-            db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
-            print("\nSuccessfully updated booking!")
-        else:
-            print('\nBooking ID does not exist.')
-
-    elif choice == '3':
-        return
-    
+    if booking:
+        db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
+        return True
     else:
-        print("Invalid option.")
+        return False
 
-# 2. Monitor Equipment Maintenance
-def monitorEquipmentMaintenance():
-    print("\n--- Monitor Equipment Maintenance ---\n")
-    print("1. View Equipment Maintenance")
-    print("2. Update Equipment's Maintenance Date")
-    print("3. Add Equipment + Maintenance Date")
-    print("4. Exit\n")
-    choice = input("Enter Choice: ")
-    
-    if choice == '1':
-        print('\n====================================================')
-        print('\nAll equipment maintenance records:\n')
-        maintenanceRecords = db.execute_query("SELECT * FROM fitnessequipment;", (), fetch=True)
-        
-        for record in maintenanceRecords:
-            print(f"Equipment ID: {record[0]}")
-            print(f"Equipment Name: {record[1]}")
-            print(f"Last Maintenance Date: {record[2]}\n")
-        
-        print('====================================================')
+def getMaintenanceRecords():
 
-    elif choice == '2':
-        equipmentID = input("\nEnter Equipment ID to update maintenance date: ")
-        newDate = input("Enter new maintenance date (YYYY-MM-DD): ")
+    maintenanceRecords = db.execute_query("SELECT * FROM fitnessequipment;", (), fetch=True)
 
-        equipment = db.execute_query("SELECT * FROM fitnessequipment WHERE equipment_id = %s;", (equipmentID,), fetch=True)
+    return maintenanceRecords
 
-        if equipment:
-            db.execute_query("UPDATE fitnessequipment SET last_maintenance = %s WHERE equipment_id = %s;", (newDate, equipmentID), fetch=False)
-            print("\nSuccessfully updated equipment maintenance date!\n")
-        else:
-            print('\nEquipment ID does not exist.\n')
+def updateEquipmentMaintenance(equipmentID, newDate):
+    equipment = db.execute_query("SELECT * FROM fitnessequipment WHERE equipment_id = %s;", (equipmentID,), fetch=True)
 
-    elif choice == '3':
-        equipmentName = input("\nEnter new Equipment Name: ")
-        maintenanceDate = input("Enter Maintenance Date (YYYY-MM-DD): ")
-
-        db.execute_query("INSERT INTO fitnessequipment (equipment_name, last_maintenance) VALUES (%s, %s);", (equipmentName, maintenanceDate), fetch=False)
-
-        print("\nSuccessfully added new equipment and maintenance date!\n")
-
-    elif choice == '4':
-        print("Exiting maintenance monitor.")
-        return
-    
+    if equipment:
+        db.execute_query("UPDATE fitnessequipment SET last_maintenance = %s WHERE equipment_id = %s;", (newDate, equipmentID), fetch=False)
+        return True
     else:
-        print("Invalid option.")
+        return False
+    
+def addEquipment(equipmentName, maintenanceDate):
 
-# 3. Update Class Schedules
-def updateClassSchedule():
-    print("\n--- Update Class Schedule ---\n")
-    print("1. View Class Schedules")
-    print("2. Update Class Schedule")
-    print("3. Add New Class to Schedule")
-    print("4. Exit\n")
-    choice = input("Enter Choice: ")
+    db.execute_query("INSERT INTO fitnessequipment (equipment_name, last_maintenance) VALUES (%s, %s);", (equipmentName, maintenanceDate), fetch=False)
 
-    if choice == '1':
-        print('\n====================================================')
-        print('\nAll scheduled fitness classes:\n')
-        classSchedules = db.execute_query("SELECT * FROM fitnessclass;", (), fetch=True)
+def getClassSchedules():
 
-        for schedule in classSchedules:
-            print(f"Class Name: {schedule[1]}")
-            print(f"Class Date: {schedule[2]}")
-            print(f"Start Time: {schedule[3]}")
-            print(f"End Time: {schedule[4]}\n")
+    classSchedules = db.execute_query("SELECT * FROM fitnessclass;", (), fetch=True)
 
-        print('====================================================')
+    return classSchedules
 
-    elif choice == '2':
-        classID = input("\nEnter Class ID to update: ")
-        newDate = input("Enter new class date (YYYY-MM-DD): ")
-        newStartTime = input("Enter new start time (HH:MM): ")
-        newEndTime = input("Enter new end time (HH:MM): ")
-
+def updateClassSchedule(classID, newDate, newStartTime, newEndTime):
+    
         fitnessClass = db.execute_query("SELECT * FROM fitnessclass WHERE class_id = %s;", (classID,), fetch=True)
         
         if fitnessClass:
-            db.execute_query("UPDATE fitnessclass SET class_date = %s, start_time = %s, end_time = %s WHERE class_id = %s;", (newDate, newStartTime, newEndTime, classID))
-            print("\nClass schedule updated successfully!")
+            db.execute_query("UPDATE fitnessclass SET class_date = %s, start_time = %s, end_time = %s WHERE class_id = %s;", (newDate, newStartTime, newEndTime, classID), fetch=False)
+            return True
         else:
-            print("\nClass ID not found.")
+            return False
 
-    elif choice == '3':
-        className = input("\nEnter new class name: ")
-        classDate = input("Enter class date (YYYY-MM-DD): ")
-        startTime = input("Enter start time (HH:MM): ")
-        endTime = input("Enter end time (HH:MM): ")
-        maxParticipants = input("Enter max participants (#): ")
-        trainerID = input("Enter trainer ID: ")
+def checkTrainerAvailability(className, classDate, startTime, endTime, maxParticipants, trainerID):
+    trainerAvailability = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND start_time <= %s AND end_time >= %s;", (trainerID, classDate, startTime, endTime), fetch=True)
 
-        trainerAvailability = db.execute_query("SELECT * FROM trainer_availability WHERE trainer_id = %s AND date = %s AND start_time <= %s AND end_time >= %s;", (trainerID, classDate, startTime, endTime), fetch=True)
+    ptSessionCollision = db.execute_query("SELECT * FROM ptsession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
 
-        ptSessionCollision = db.execute_query("SELECT * FROM ptsession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
+    classCollision = db.execute_query("SELECT * FROM fitnessclass WHERE trainer_id = %s AND class_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
 
-        classCollision = db.execute_query("SELECT * FROM fitnessclass WHERE trainer_id = %s AND class_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
-
-        if trainerAvailability and not ptSessionCollision and not classCollision:
-            db.execute_query("INSERT INTO fitnessclass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES (%s, %s, %s, %s, %s, %s, %s);", (className, classDate, startTime, endTime, 0, maxParticipants, trainerID), fetch=False)
-            print("\nNew class schedule added successfully!")
-        else:
-            print("\nThe trainer is not available during the given date and time or there is a collision with an existing session/class.")
-
-    elif choice == '4':
-        return
-
+    if trainerAvailability and not ptSessionCollision and not classCollision:
+        db.execute_query("INSERT INTO fitnessclass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES (%s, %s, %s, %s, %s, %s, %s);", (className, classDate, startTime, endTime, 0, maxParticipants, trainerID), fetch=False)
+        return True
     else:
-        print("\nInvalid choice, please try again.")
+        return False
 
-# 4. Process Payments
-
-def billingsAndPayment():
-    print("\n--- Billings and Payment ---")
-    print("1. View Billings")
-    print("2. Process Payments")
-    print("3. Exit")
-    choice = input("Enter Choice: ")
-
-    if choice == '1':
-        while True:
-            print("\n--- Billings ---")
-            print("1. View Unpaid Billings")
-            print("2. View Paid Billings")
-            print("3. Exit")
-            billing_choice = input("Enter Choice: ")
-
-            if billing_choice == '1':
-                unpaid_billings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Pending',), fetch=True)
-                print("\n--- Unpaid Billings ---")
-                for billing in unpaid_billings:
-                    print(f"Billing ID: {billing['billing_id']}, Amount: {billing['amount']}, Date: {billing['date']}")
-                
-            elif billing_choice == '2':
-                paid_billings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Paid',), fetch=True)
-                print("\n--- Paid Billings ---")
-                for billing in paid_billings:
-                    print(f"Billing ID: {billing['billing_id']}, Amount: {billing['amount']}, Date: {billing['date']}")
-                
-            elif billing_choice == '3':
-                break
-            else:
-                print("Invalid option.")
+def getUnpaidBillings():
     
-    elif choice == '2':
-        billing_id = input("\nEnter Billing ID to process payment: ")
+    unpaidBillings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Pending',), fetch=True)
+    
+    return unpaidBillings
 
-        billing = db.execute_query("SELECT * FROM billing WHERE billing_id = %s;", (billing_id,), fetch=True)
-        if billing:
-            db.execute_query("UPDATE billing SET status = %s WHERE billing_id = %s;", ('Paid', billing_id,), fetch=False)
-            print(f"Billing ID {billing_id} has been charged and is now paid.")
-        else:
-            print("Billing ID does not exist.")
+def getPaidBillings():
+        
+        paidBillings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Paid',), fetch=True)
+        
+        return paidBillings
 
-    elif choice == '3':
-        return
+def processPayment(billingID):
+    billing = db.execute_query("SELECT * FROM billing WHERE billing_id = %s;", (billingID,), fetch=True)
+
+    if billing:
+        db.execute_query("UPDATE billing SET status = %s WHERE billing_id = %s;", ('Paid', billingID,), fetch=False)
+        return True
     else:
-        print("Invalid option.")
+        return False
+
 def isRegistered(member_id, class_id):
     return db.execute_query(
         """ SELECT EXISTS (

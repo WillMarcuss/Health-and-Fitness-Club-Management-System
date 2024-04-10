@@ -1,7 +1,7 @@
 import functions as fs
 import trainerInterface as trainer
 import memberInterface as member
-
+import adminInterface as admin
 
 # Member interface
 def member_interface(member_id):
@@ -50,14 +50,14 @@ def admin_interface():
         )
         choice = input("Enter choice: ")
         if choice == "1":
-            fs.manageRoomBookings()
+            admin.manageRoomBookings()
         elif choice == "2":
-            fs.monitorEquipmentMaintenance()
+            admin.monitorEquipmentMaintenance()
         elif choice == "3":
-            fs.updateClassSchedule()
+            admin.updateClassSchedule()
             pass
         elif choice == "4":
-            fs.billingsAndPayment()
+            admin.billingsAndPayment()
             pass
         elif choice == "5":
             break
