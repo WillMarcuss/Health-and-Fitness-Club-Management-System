@@ -11,26 +11,25 @@ def manageRoomBookings():
     
     if choice == '1':
         print('\n====================================================')
-        print('\nAll scheduled room bookings (starting from earliest date):\n')
+        print('\nAll scheduled room bookings (starting from earliest date):')
 
         roomBookings = fs.getRoomBookings()
 
         if roomBookings:
             for roomBooking in roomBookings:
-                print("Room: " + roomBooking['room_name'] + '\n')
+                print('\n---')
 
-                classDetails = roomBooking[2:]
-                print(f"Class: {classDetails[1]}")
-                print(f"Date: {classDetails[2]}")
-                print(f"Start Time: {classDetails[3]}")
-                print(f"End Time: {classDetails[4]}")
+                print("\nRoom: " + roomBooking['room_name'] + '\n')
                 
-                trainerDetails = roomBooking[10:]
-                print(f"Trainer: {trainerDetails[0]} {trainerDetails[1]}\n")
+                print(f"Booking ID: {roomBooking['booking_id']}")
+                print(f"Class: {roomBooking['class_name']}")
+                print(f"Date: {roomBooking['class_date']}")
+                print(f"Start Time: {roomBooking['start_time']}")
+                print(f"End Time: {roomBooking['end_time']}")
         else:
             print('No room bookings found.')
 
-        print('====================================================')
+        print('\n====================================================')
 
     elif choice == '2':
         while True:
@@ -76,9 +75,9 @@ def monitorEquipmentMaintenance():
         
         if maintenanceRecords:
             for record in maintenanceRecords:
-                print(f"Equipment ID: {record[0]}")
-                print(f"Equipment Name: {record[1]}")
-                print(f"Last Maintenance Date: {record[2]}\n")
+                print(f"Equipment ID: {record['equipment_id']}")
+                print(f"Equipment Name: {record['equipment_name']}")
+                print(f"Last Maintenance Date: {record['last_maintenance']}\n")
         else:
             print('No maintenance records found.')
         
@@ -146,10 +145,10 @@ def updateClassSchedule():
 
         if classSchedules:
             for schedule in classSchedules:
-                print(f"Class Name: {schedule[1]}")
-                print(f"Class Date: {schedule[2]}")
-                print(f"Start Time: {schedule[3]}")
-                print(f"End Time: {schedule[4]}\n")
+                print(f"Class Name: {schedule['class_name']}")
+                print(f"Class Date: {schedule['class_date']}")
+                print(f"Start Time: {schedule['start_time']}")
+                print(f"End Time: {schedule['end_time']}\n")
         else:
             print('No class schedules found.')
 
