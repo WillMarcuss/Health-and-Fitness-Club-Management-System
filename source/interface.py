@@ -76,10 +76,13 @@ def main():
         choice = input("Enter choice: ")
         if choice == "1":
             member_id = input("Enter Member ID: ")
-            if fs.check_id_exists(member_id, "member", "member_id"):
-                member_interface(member_id)
-            else:
-                print("\nMember ID does not exist. Please try again.")
+            try:
+                if fs.check_id_exists(member_id, "member", "member_id"):
+                    member_interface(member_id)
+                else:
+                    print("\nMember ID does not exist. Please try again.")
+            except:
+                print("Please enter a valid Member ID")
         elif choice == "2":
             trainer_id = input("Enter Trainer ID: ")
             if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
