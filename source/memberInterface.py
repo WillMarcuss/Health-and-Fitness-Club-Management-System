@@ -17,15 +17,19 @@ def register():
 
 def updateProfile(member_id):
     print("\n---- Update Your Profile ----")
-    first_name = input("First name: ")
-    last_name = input("Last name: ")
-    height = input("Height (cm): ")
-    weight = input("Weight (kg): ")
-    goals = input("Fitness Goals: ")
-    routines = input("Exercise Routines: ")
-    fs.update_member_profile(
-        member_id, first_name, last_name, height, weight, goals, routines
-    )
+    while True:
+        try:
+            first_name = input("First name: ")
+            last_name = input("Last name: ")
+            height = input("Height (cm): ")
+            weight = input("Weight (kg): ")
+            goals = input("Fitness Goals: ")
+            routines = input("Exercise Routines: ")
+            fs.update_member_profile(member_id, first_name, last_name, height, weight, goals, routines)
+            break
+        except:
+            print("Please enter valid input for goals")
+    
 
 
 def displayDashboard(member_id):
