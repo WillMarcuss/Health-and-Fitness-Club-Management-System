@@ -25,6 +25,7 @@ def register_member(first_name, last_name, height, weight, goals, routines):
         "INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",
         (member_id, routines),
     )
+    return member_id
 
 
 def update_member_profile(

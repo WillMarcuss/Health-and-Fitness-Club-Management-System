@@ -70,7 +70,9 @@ def admin_interface():
 # Main menu
 def main():
     while True:
-        print("\nMain Menu\n1. Login as a Member\n2. Login as Trainer\n3. Login as Admin\n4. Register\n5. Exit")
+        print(
+            "\nMain Menu\n1. Login as a Member\n2. Login as Trainer\n3. Login as Admin\n4. Register\n5. Exit"
+        )
         choice = input("Enter choice: ")
         if choice == "1":
             member_id = input("Enter Member ID: ")

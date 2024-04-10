@@ -9,7 +9,7 @@ def register():
     weight = input("Weight (kg): ")
     goals = input("Fitness Goals: ")
     routines = input("Exercise Routines: ")
-    fs.register_member(first_name, last_name, height, weight, goals, routines)
+    member_id = fs.register_member(first_name, last_name, height, weight, goals, routines)
     print(
         f"\nRegistered successfully. Your member ID is {member_id}. Please remember it for login."
     )
@@ -90,12 +90,12 @@ def registerClasses(member_id):
                     f"\nFitness Class ID {fitclass[0]}: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}"
                 )
         elif selection == "2":
-            classes = fs.fetchClassIDs();
+            classes = fs.fetchClassIDs()
             class_id = input("\nEnter the class ID you would like to register for: ")
             if not class_id in classes:
                 print("\nClass ID does not exist.")
             else:
-                if (not fs.isRegistered(member_id, class_id)):
+                if not fs.isRegistered(member_id, class_id):
                     fs.registerForClass(member_id, class_id)
                     print("\nSuccesfully registered for this class!")
                 else:
