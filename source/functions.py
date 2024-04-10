@@ -300,7 +300,12 @@ def addEquipment(equipmentName, maintenanceDate):
 
 def getClassSchedules():
 
-    classSchedules = db.execute_query("SELECT * FROM fitnessclass;", (), fetch=True)
+    classSchedules = db.execute_query("""
+        SELECT * 
+        FROM fitnessclass 
+        INNER JOIN trainer 
+        ON fitnessclass.trainer_id = trainer.trainer_id;
+    """, (), fetch=True)
 
     return classSchedules
 

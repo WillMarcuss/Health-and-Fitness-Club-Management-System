@@ -145,10 +145,12 @@ def updateClassSchedule():
 
         if classSchedules:
             for schedule in classSchedules:
+                print(f"Class ID: {schedule['class_id']}")
                 print(f"Class Name: {schedule['class_name']}")
                 print(f"Class Date: {schedule['class_date']}")
                 print(f"Start Time: {schedule['start_time']}")
-                print(f"End Time: {schedule['end_time']}\n")
+                print(f"End Time: {schedule['end_time']}")
+                print(f"Trainer: {schedule['first_name']} {schedule['last_name']}\n")
         else:
             print('No class schedules found.')
 
