@@ -262,6 +262,107 @@ def search_for_member(fName=None, lName=None):
     return results
 
 
+#Admin Functions
+
+def getRoomBookings():
+
+    roomBookings = db.execute_query("SELECT b.booking_id, b.room_name, f.*, t.first_name, t.last_name FROM bookings b JOIN fitnessclass f ON b.class_id = f.class_id JOIN trainer t ON f.trainer_id = t.trainer_id ORDER BY f.class_date ASC", (), fetch=True)
+        
+    return roomBookings
+
+def updateRoomBooking(bookingID, newRoomName):
+    booking = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
+
+    if booking:
+        db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
+        return True
+    else:
+        return False
+
+def getMaintenanceRecords():
+
+    maintenanceRecords = db.execute_query("SELECT * FROM fitnessequipment;", (), fetch=True)
+
+    return maintenanceRecords
+
+def updateEquipmentMaintenance(equipmentID, newDate):
+    equipment = db.execute_query("SELECT * FROM fitnessequipment WHERE equipment_id = %s;", (equipmentID,), fetch=True)
+
+    if equipment:
+        db.execute_query("UPDATE fitnessequipment SET last_maintenance = %s WHERE equipment_id = %s;", (newDate, equipmentID), fetch=False)
+        return True
+    else:
+        return False
+    
+def addEquipment(equipmentName, maintenanceDate):
+
+    db.execute_query("INSERT INTO fitnessequipment (equipment_name, last_maintenance) VALUES (%s, %s);", (equipmentName, maintenanceDate), fetch=False)
+
+def getClassSchedules():
+
+    classSchedules = db.execute_query("""
+        SELECT * 
+        FROM fitnessclass 
+        INNER JOIN trainer 
+        ON fitnessclass.trainer_id = trainer.trainer_id;
+    """, (), fetch=True)
+
+    return classSchedules
+
+def updateClassSchedule(classID, newDate, newStartTime, newEndTime):
+    
+        fitnessClass = db.execute_query("SELECT * FROM fitnessclass WHERE class_id = %s;", (classID,), fetch=True)
+        trainerAvailable = checkTrainerAvailability(newDate, newStartTime, newEndTime, fitnessClass[0]['trainer_id'])
+        
+        if fitnessClass and trainerAvailable:
+            db.execute_query("UPDATE fitnessclass SET class_date = %s, start_time = %s, end_time = %s WHERE class_id = %s;", (newDate, newStartTime, newEndTime, classID), fetch=False)
+            return True
+        else:
+            return False
+
+def checkTrainerAvailability(classDate, startTime, endTime, trainerID):
+    trainerAvailability = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND start_time <= %s AND end_time >= %s;", (trainerID, classDate, startTime, endTime), fetch=True)
+
+    ptSessionCollision = db.execute_query("SELECT * FROM ptsession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
+
+    classCollision = db.execute_query("SELECT * FROM fitnessclass WHERE trainer_id = %s AND class_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
+
+    if trainerAvailability and not ptSessionCollision and not classCollision:
+        return True
+    else:
+        return False
+    
+def addClass(className, classDate, startTime, endTime, maxParticipants, trainerID):
+
+    trainerAvailable = checkTrainerAvailability(classDate, startTime, endTime, trainerID)
+
+    if trainerAvailable:
+        db.execute_query("INSERT INTO fitnessclass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES (%s, %s, %s, %s, %s, %s, %s);", (className, classDate, startTime, endTime, 0, maxParticipants, trainerID), fetch=False)
+        return True
+    else:
+        return False
+
+def getUnpaidBillings():
+    
+    unpaidBillings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Pending',), fetch=True)
+    
+    return unpaidBillings
+
+def getPaidBillings():
+        
+        paidBillings = db.execute_query("SELECT * FROM billing WHERE status = %s;", ('Paid',), fetch=True)
+        
+        return paidBillings
+
+def processPayment(billingID):
+    billing = db.execute_query("SELECT * FROM billing WHERE billing_id = %s;", (billingID,), fetch=True)
+
+    if billing:
+        db.execute_query("UPDATE billing SET status = %s WHERE billing_id = %s;", ('Paid', billingID,), fetch=False)
+        return True
+    else:
+        return False
+
 def isRegistered(member_id, class_id):
     return db.execute_query(
         """ SELECT EXISTS (

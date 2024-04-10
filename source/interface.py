@@ -1,7 +1,7 @@
 import functions as fs
 import trainerInterface as trainer
 import memberInterface as member
-
+import adminInterface as admin
 
 # Member interface
 def member_interface(member_id):
@@ -50,16 +50,14 @@ def admin_interface():
         )
         choice = input("Enter choice: ")
         if choice == "1":
-            # Assume book_room function exists and is implemented correctly
-            pass
+            admin.manageRoomBookings()
         elif choice == "2":
-            # Assume update_equipment_maintenance function exists and is implemented correctly
-            pass
+            admin.monitorEquipmentMaintenance()
         elif choice == "3":
-            # Assume update_class_schedule function exists and is implemented correctly
+            admin.updateClassSchedule()
             pass
         elif choice == "4":
-            # Assume process_payment function exists and is implemented correctly
+            admin.billingsAndPayment()
             pass
         elif choice == "5":
             break
@@ -91,7 +89,7 @@ def main():
                 print("\nTrainer ID does not exist. Please try again.")
         elif choice == "3":
             employee_id = input("Enter Employee ID: ")
-            if fs.check_id_exists(employee_id, "employee", "employee_id"):
+            if fs.check_id_exists(employee_id, "adminstaff", "employee_id"):
                 admin_interface()
             else:
                 print("\nEmployee ID does not exist. Please try again.")
