@@ -2,7 +2,7 @@ import functions as fs
 
 
 def register():
-    print("\nRegister New Member")
+    print("\nRegister New Member ($120 fee)")
     first_name = input("First name: ")
     last_name = input("Last name: ")
     height = input("Height (cm): ")
@@ -59,7 +59,7 @@ def schedulePTSessions(member_id):
     print("\n---- Schedule PT Session ----")
     while True:
         selection = input(
-            "\n1. View Trainers\n2. Schedule Session\n3. Exit\nEnter Choice: "
+            "\n1. View Trainers\n2. Schedule Session ($50)\n3. Exit\nEnter Choice: "
         )
         if selection == "1":
             trainers = fs.fetchTrainers()
@@ -88,7 +88,7 @@ def registerClasses(member_id):
     print("\n---- Register for Group Fitness Classes ----")
     while True:
         selection = input(
-            "\n1. View Classes\n2. Register for Classes\n3. Exit\nEnter Choice: "
+            "\n1. View Classes\n2. Register for Classes ($25)\n3. Exit\nEnter Choice: "
         )
         if selection == "1":
             classes = fs.fetchFitnessClasses()

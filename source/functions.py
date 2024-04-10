@@ -25,6 +25,12 @@ def register_member(first_name, last_name, height, weight, goals, routines):
         "INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",
         (member_id, routines),
     )
+
+    db.execute_query(
+    "INSERT INTO Billing (category, amount, date, member_id, status) VALUES (%s, %s, CURRENT_DATE, %s, %s)",
+    ("Membership Fee", 120, member_id, "Pending")
+)
+
     return member_id
 
 
@@ -162,6 +168,9 @@ def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
         "INSERT INTO PTSession (session_date, start_time, end_time, trainer_id, member_id) VALUES (%s, %s, %s, %s, %s);",
         (session_date, start_time, end_time, trainer_id, member_id),
     )
+    db.execute_query(
+    "INSERT INTO Billing (category, amount, date, member_id, status) VALUES (%s, %s, CURRENT_DATE, %s, %s)",
+    ("Personal Training", 50, member_id, "Pending"))
     print("Session scheduled successfully.")
 
 
@@ -273,3 +282,6 @@ def registerForClass(member_id, class_id):
         "UPDATE fitnessclass SET num_participants = num_participants + 1 WHERE class_id = %s;",
         (class_id),
     )
+    db.execute_query(
+    "INSERT INTO Billing (category, amount, date, member_id, status) VALUES (%s, %s, CURRENT_DATE, %s, %s)",
+    ("Fitness Class", 25, member_id, "Pending"))
