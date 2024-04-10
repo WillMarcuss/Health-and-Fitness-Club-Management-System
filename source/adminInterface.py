@@ -163,7 +163,10 @@ def updateClassSchedule():
             newStartTime = input("Enter new start time (HH:MM): ")
             newEndTime = input("Enter new end time (HH:MM): ")
 
-            if not ((classID and newDate and newStartTime and newEndTime) and classID.isdigit()):
+            if not classID.isdigit():
+                print("\nInvalid input. Enter a valid ID.")
+                pass
+            if not ((classID and newDate and newStartTime and newEndTime)):
                 print("\nInvalid input. Please ensure are fields are inputted and are in proper format.")
             else:
                 break
@@ -173,7 +176,7 @@ def updateClassSchedule():
         if successfulUpdate:
             print("\nClass schedule updated successfully!")
         else:
-            print("\nClass ID not found.")
+            print("\nTrainer is unavailable at that time.")
 
     elif choice == '3':
         while True:
@@ -189,7 +192,7 @@ def updateClassSchedule():
             else:
                 break
         
-        trainerAvailable = fs.checkTrainerAvailability(className, classDate, startTime, endTime, maxParticipants, trainerID)
+        trainerAvailable = fs.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
 
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
