@@ -2,7 +2,7 @@ import functions as fs
 
 
 def register():
-    print("\nRegister New Member")
+    print("\nRegister New Member ($120 fee)")
     first_name = input("First name: ")
     last_name = input("Last name: ")
     height = input("Height (cm): ")

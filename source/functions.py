@@ -25,6 +25,12 @@ def register_member(first_name, last_name, height, weight, goals, routines):
         "INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",
         (member_id, routines),
     )
+
+    db.execute_query(
+    "INSERT INTO Billing (category, amount, date, member_id, status) VALUES (%s, %s, CURRENT_DATE, %s, %s)",
+    ("Membership Fee", 120, member_id, "Pending")
+)
+
     return member_id
 
 
