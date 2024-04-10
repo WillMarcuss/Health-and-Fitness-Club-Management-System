@@ -2,6 +2,7 @@ import functions as fs
 import trainerInterface as trainer
 import memberInterface as member
 
+
 # Member interface
 def member_interface(member_id):
     print(f"\nWelcome Member {member_id}")
@@ -11,21 +12,13 @@ def member_interface(member_id):
         )
         choice = input("Enter choice: ")
         if choice == "1":
-            print("---- Update Your Profile ----")
-            first_name = input("First name: ")
-            last_name = input("Last name: ")
-            height = input("Height (cm): ")
-            weight = input("Weight (kg): ")
-            fs.update_member_profile(member_id, first_name, last_name, height, weight)
+            member.updateProfile(member_id)
         elif choice == "2":
-            # Assume display_member_dashboard function exists and is implemented correctly
-            pass
+            member.displayDashboard(member_id)
         elif choice == "3":
-            # Assume schedule_session function exists and is implemented correctly
-            pass
+            member.schedulePTSessions(member_id)
         elif choice == "4":
-            # Assume register_for_class function exists and is implemented correctly
-            pass
+            member.registerClasses(member_id)
         elif choice == "5":
             break
         else:
@@ -75,19 +68,19 @@ def admin_interface():
 # Main menu
 def main():
     while True:
-        print("\nMain Menu")
-        print("1. Login as a Member")
-        print("2. Login as Trainer")
-        print("3. Login as Admin")
-        print("4. Register")
-        print("5. Exit")
+        print(
+            "\nMain Menu\n1. Login as a Member\n2. Login as Trainer\n3. Login as Admin\n4. Register\n5. Exit"
+        )
         choice = input("Enter choice: ")
         if choice == "1":
             member_id = input("Enter Member ID: ")
-            if fs.check_id_exists(member_id, "member", "member_id"):
-                member_interface(member_id)
-            else:
-                print("\nMember ID does not exist. Please try again.")
+            try:
+                if fs.check_id_exists(member_id, "member", "member_id"):
+                    member_interface(member_id)
+                else:
+                    print("\nMember ID does not exist. Please try again.")
+            except:
+                print("Please enter a valid Member ID")
         elif choice == "2":
             trainer_id = input("Enter Trainer ID: ")
             if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
@@ -101,7 +94,7 @@ def main():
             else:
                 print("\nEmployee ID does not exist. Please try again.")
         elif choice == "4":
-           member.register()
+            member.register()
         elif choice == "5":
             print("\nGoodbye!")
             break
