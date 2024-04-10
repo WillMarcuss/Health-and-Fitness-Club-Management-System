@@ -11,20 +11,30 @@ def check_id_exists(id_value, table, id_column):
     return result[0]["exists"]
 
 
-def register_member(first_name, last_name, height, weight,goals,routines):
+def register_member(first_name, last_name, height, weight, goals, routines):
     member_id = db.execute_query(
         "INSERT INTO member (first_name, last_name, height, weight) VALUES (%s, %s, %s, %s) RETURNING member_id;",
-        (first_name, last_name, float(height), float(weight)),fetch=True)[0]["member_id"]
-    
-    db.execute_query("INSERT INTO FitnessGoals (member_id,goals) VALUES (%s, %s)",(member_id,goals))
-    db.execute_query("INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",(member_id,routines))
-    print(
-        f"Registered successfully. Your member ID is {member_id}. Please remember it for login."
+        (first_name, last_name, float(height), float(weight)),
+        fetch=True,
+    )[0]["member_id"]
+
+    db.execute_query(
+        "INSERT INTO FitnessGoals (member_id,goals) VALUES (%s, %s)", (member_id, goals)
+    )
+    db.execute_query(
+        "INSERT INTO ExerciseRoutines (member_id,routines) VALUES (%s, %s)",
+        (member_id, routines),
     )
 
 
 def update_member_profile(
-    member_id, first_name=None, last_name=None, height=None, weight=None, fitnessgoals = None, exerciseroutines = None
+    member_id,
+    first_name=None,
+    last_name=None,
+    height=None,
+    weight=None,
+    fitnessgoals=None,
+    exerciseroutines=None,
 ):
     fields = []
     values = []
@@ -41,110 +51,118 @@ def update_member_profile(
         fields.append("weight = %s")
         values.append(weight)
     if fitnessgoals:
-        db.execute_query("UPDATE FitnessGoals SET goals = %s WHERE member_id = %s;",(fitnessgoals,member_id))
+        db.execute_query(
+            "UPDATE FitnessGoals SET goals = %s WHERE member_id = %s;",
+            (fitnessgoals, member_id),
+        )
     if exerciseroutines:
-        db.execute_query("UPDATE ExerciseRoutines SET routines = %s WHERE member_id = %s;",(exerciseroutines,member_id))
+        db.execute_query(
+            "UPDATE ExerciseRoutines SET routines = %s WHERE member_id = %s;",
+            (exerciseroutines, member_id),
+        )
     values.append(member_id)
     db.execute_query(
         "UPDATE Member SET " + ", ".join(fields) + " WHERE member_id = %s;",
-        tuple(values),)
+        tuple(values),
+    )
 
-#Member Dashboard
-def display_member_dashboard(member_id,selection):
-    routines = db.execute_query(
+
+def fetchRoutines(member_id):
+    return db.execute_query(
         "SELECT * FROM ExerciseRoutines WHERE member_id = %s;",
         (member_id,),
         fetch=True,
     )[0]["routines"]
-    goals = db.execute_query(
+
+
+def fetchGoals(member_id):
+    return db.execute_query(
         "SELECT * FROM FitnessGoals WHERE member_id = %s;",
         (member_id,),
         fetch=True,
     )[0]["goals"]
-    fitnessClasses = db.execute_query(
-    "SELECT fc.* FROM EnrolledMembers em JOIN fitnessclass fc ON em.class_id = fc.class_id WHERE em.member_id = %s",
-    (member_id,),
-    fetch=True
-)
-    if selection == "1":
-        print(f"Fitness Goals: {goals}")
-    elif selection == "2":
-        print(f"Exercise Routines: {routines}")
-    elif selection == "3":
-        manage_pt_session(member_id)
-    elif selection == "4":
-        for fitclass in fitnessClasses:
-            print(f"\nFitness Class ID {fitclass[0]}: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}")
 
-def manage_pt_session(member_id):
-    print("\n---- Manage PT Sessions ----")
-    while True:
-        ptSessions = db.execute_query( "SELECT pts.*, tr.first_name AS trainer_first_name, tr.last_name AS trainer_last_name FROM ptsession pts JOIN trainer tr ON pts.trainer_id = tr.trainer_id WHERE pts.member_id = %s",(member_id,),fetch=True)
-        selection = input("\n1. View my PT sessions\n2. Reschedule session\n3. Cancel session\n4. Exit\nEnter Choice: ")
-        if selection == "1":
-            for sesh in ptSessions:
-                print(f"\nPT Session ID: {sesh[0]} on {sesh[1]} from {sesh[2]} to {sesh[3]} with Trainer: {sesh[6]} {sesh[7]}")
-        elif selection == "2":
-            sessionID = input("\nEnter the session ID in which you would like to reschedule: ")
-            session_exists = db.execute_query("SELECT COUNT(*) FROM PTsession WHERE session_id = %s AND member_id = %s;", (sessionID, member_id), fetch=True)
-            if session_exists[0][0] == 0:
-                print(f"No sessions were found with the specified session ID under Member ID: {member_id}.")
-            else:
-                while True:
-                    trainerID = db.execute_query("SELECT trainer_id FROM ptsession WHERE session_id = %s;", (sessionID,), fetch=True)
-                    trainerID = trainerID[0][0]
-                    date = input("Enter the date you would like to reschedule to (yyyy-mm-dd): ")
-                    startTime = input("Enter the start time you would like to reschedule to (ex: 09:00): ")
-                    endTime = input("Enter the end time you would like to reschedule to (ex: 10:00): ")
-                    if checkDateTimeValidity(date,startTime,endTime) and trainer_is_available(trainerID,date,startTime,endTime):
-                        break
-                    else:
-                        print("-- Please enter a valid date -- ")
-                db.execute_query("UPDATE PTsession SET session_date = %s, start_time = %s, end_time = %s WHERE session_id = %s;",(date,startTime,endTime,sessionID))
-                print(f"PT Session Reschedule successfully to: {date} from {startTime} to {endTime}")
 
-        elif selection == "3":
-            sessionID = input("Enter the session ID of the session you would like to cancel: ")
-            session_exists = db.execute_query("SELECT COUNT(*) FROM PTsession WHERE session_id = %s AND member_id = %s;", (sessionID, member_id), fetch=True)
-            if session_exists[0][0] == 0:
-                print(f"No sessions were found with the specified session ID under Member ID: {member_id}.")
-            else:
-                db.execute_query("DELETE FROM PTsession WHERE session_id = %s AND member_id = %s;", (sessionID,member_id))
-                print("PT session canceled successfully")
-            
+def fetchMemberClasses(member_id):
+    return db.execute_query(
+        "SELECT fc.* FROM EnrolledMembers em JOIN fitnessclass fc ON em.class_id = fc.class_id WHERE em.member_id = %s",
+        (member_id,),
+        fetch=True,
+    )
 
-        
-        elif selection == "4":
-            break
 
-def print_trainers():
-    trainers_availability = db.execute_query(
-    """
+def fetchPTSessions(member_id):
+    return db.execute_query(
+        "SELECT pts.*, tr.first_name AS trainer_first_name, tr.last_name AS trainer_last_name FROM ptsession pts JOIN trainer tr ON pts.trainer_id = tr.trainer_id WHERE pts.member_id = %s",
+        (member_id,),
+        fetch=True,
+    )
+
+
+def checkPTSessionExists(member_id, session_id):
+    return db.execute_query(
+        "SELECT COUNT(*) FROM PTsession WHERE session_id = %s AND member_id = %s;",
+        (session_id, member_id),
+        fetch=True,
+    )
+
+
+def findTrainerForSession(session_id):
+    return db.execute_query(
+        "SELECT trainer_id FROM ptsession WHERE session_id = %s;",
+        (session_id,),
+        fetch=True,
+    )
+
+
+def reschedulePTSession(date, startTime, endTime, session_id):
+    db.execute_query(
+        "UPDATE PTsession SET session_date = %s, start_time = %s, end_time = %s WHERE session_id = %s;",
+        (date, startTime, endTime, session_id),
+    )
+
+
+def deletePTSession(member_id, session_id):
+    db.execute_query(
+        "DELETE FROM PTsession WHERE session_id = %s AND member_id = %s;",
+        (session_id, member_id),
+    )
+
+
+def fetchTrainers():
+    return db.execute_query(
+        """
     SELECT t.*, ta.date, ta.start_time, ta.end_time
     FROM trainer t
     LEFT JOIN traineravailability ta ON t.trainer_id = ta.trainer_id
     """,
-    fetch=True
-)
+        fetch=True,
+    )
 
-    # Display the results
-    for row in trainers_availability:
-        print("\nTrainer ID:", row['trainer_id'])
-        print("Trainer Name:", row['first_name'],row['last_name'])
-        print("Availability Date:", row['date'])
-        print("Start Time:", row['start_time'])
-        print("End Time:", row['end_time'])
-        print("---------------------")
+
+def fetchFitnessClasses():
+    return db.execute_query("SELECT * FROM FitnessClass", fetch=True)
+
+
+def fetchClassIDs():
+    classes = db.execute_query("SELECT class_id FROM FitnessClass", fetch=True)
+    classes = [str(sublist[0]) for sublist in classes]
+    return classes
+
 
 def schedule_session(member_id, trainer_id, session_date, start_time, end_time):
-    if not(checkDateTimeValidity(session_date,start_time,end_time) and trainer_is_available(trainer_id, session_date, start_time, end_time)):
+    if not (
+        checkDateTimeValidity(session_date, start_time, end_time)
+        and trainer_is_available(trainer_id, session_date, start_time, end_time)
+    ):
         print("Trainer not available at the requested time.")
         return
     db.execute_query(
         "INSERT INTO PTSession (session_date, start_time, end_time, trainer_id, member_id) VALUES (%s, %s, %s, %s, %s);",
-        (session_date, start_time, end_time, trainer_id, member_id)
+        (session_date, start_time, end_time, trainer_id, member_id),
     )
     print("Session scheduled successfully.")
+
 
 def trainer_is_available(trainer_id, session_date, start_time, end_time):
     trainer = db.execute_query(
@@ -152,13 +170,17 @@ def trainer_is_available(trainer_id, session_date, start_time, end_time):
         (trainer_id, session_date, start_time, start_time, end_time, end_time),
         fetch=True,
     )
-    trainerHours = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",(trainer_id, session_date, start_time, start_time, end_time, end_time),fetch=True)
+    trainerHours = db.execute_query(
+        "SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s));",
+        (trainer_id, session_date, start_time, start_time, end_time, end_time),
+        fetch=True,
+    )
 
     if trainer or not trainerHours:
         return False
     else:
         return True
-    
+
 
 def set_trainer_availability(trainer_id, date, sTime, eTime):
     if not checkDateTimeValidity(date, sTime, eTime):
@@ -230,20 +252,23 @@ def search_for_member(fName=None, lName=None):
     return results
 
 
-def print_classes():
-    classes = db.execute_query("SELECT * FROM FitnessClass",fetch=True)
-    for fitclass in classes:
-         print(f"\nFitness Class ID {fitclass[0]}: {fitclass[1]} scheduled for {fitclass[2]} from {fitclass[3]} to {fitclass[4]}")
+def isRegistered(member_id, class_id):
+    return db.execute_query(
+        """ SELECT EXISTS (
+                SELECT 1 FROM EnrolledMembers
+                WHERE member_id = %s AND class_id = %s
+            ) AS is_member;""",
+        (member_id, class_id),
+        fetch=True,
+    )[0]["is_member"]
 
-def register_for_class(member_id):
-    classes = db.execute_query("SELECT class_id FROM FitnessClass",fetch=True)
-    classes = [str(sublist[0]) for sublist in classes]
-    classID = input("\nEnter the class ID you would like to register for:")
 
-    isRegistered = db.execute_query("SELECT * FROM EnrolledMembers WHERE member_id = %s AND class_id = %s;", (member_id, classID), fetch=True)
-
-    if classID in classes and not isRegistered:
-        db.execute_query("INSERT INTO EnrolledMembers (class_id,member_id) VALUES (%s, %s);", (classID,member_id))
-        db.execute_query("UPDATE fitnessclass SET num_participants = num_participants + 1 WHERE class_id = %s;", (classID,))
-    else:
-        print("Class not available or already registered!")
+def registerForClass(member_id, class_id):
+    db.execute_query(
+        "INSERT INTO EnrolledMembers (class_id,member_id) VALUES (%s, %s);",
+        (class_id, member_id),
+    )
+    db.execute_query(
+        "UPDATE fitnessclass SET num_participants = num_participants + 1 WHERE class_id = %s;",
+        (class_id),
+    )
