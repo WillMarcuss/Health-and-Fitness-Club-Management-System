@@ -83,16 +83,22 @@ def main():
                 print("Please enter a valid Member ID")
         elif choice == "2":
             trainer_id = input("Enter Trainer ID: ")
-            if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
-                trainer_interface(trainer_id)
-            else:
-                print("\nTrainer ID does not exist. Please try again.")
+            try:
+                if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
+                    trainer_interface(trainer_id)
+                else:
+                    print("\nTrainer ID does not exist. Please try again.")
+            except:
+                print("Please enter a valid Trainer ID")
         elif choice == "3":
             employee_id = input("Enter Employee ID: ")
-            if fs.check_id_exists(employee_id, "adminstaff", "employee_id"):
-                admin_interface()
-            else:
-                print("\nEmployee ID does not exist. Please try again.")
+            try:
+                if fs.check_id_exists(employee_id, "adminstaff", "employee_id"):
+                    admin_interface()
+                else:
+                    print("\nEmployee ID does not exist. Please try again.")
+            except:
+                print("Please enter a valid Employee ID")
         elif choice == "4":
             member.register()
         elif choice == "5":
