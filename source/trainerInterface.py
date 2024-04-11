@@ -4,8 +4,8 @@ import functions as fs
 def setAvailability(trainer_id):
     print("\n---- Set Your Availability ----")
     date = input("Date (yyyy-mm-dd): ")
-    start_time = input("Start Time (hh:mm)")
-    end_time = input("End Time (hh:mm)")
+    start_time = input("Start Time (hh:mm): ")
+    end_time = input("End Time (hh:mm): ")
     fs.set_trainer_availability(trainer_id, date, start_time, end_time)
 
 
