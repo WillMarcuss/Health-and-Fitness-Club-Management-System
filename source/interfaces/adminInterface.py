@@ -50,7 +50,7 @@ def manageRoomBookings():
         if successfulUpdate:
             print("\nSuccessfully updated booking!")
         else:
-            print('\nBooking ID does not exist.')
+            print(f'\nRoom Booking unable to be moved to {newRoomName}')
 
     elif choice == '3':
         return
@@ -182,7 +182,7 @@ def updateClassSchedule():
         if successfulUpdate:
             print("\nClass schedule updated successfully!")
         else:
-            print("\nTrainer is unavailable at that time.")
+            print("\nUnable to update class. Please see error(s) above.")
 
     elif choice == '3':
         while True:
@@ -204,7 +204,7 @@ def updateClassSchedule():
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
         else:
-            print("\nThe class was unable to be scheduled. This could be for one of two reasons:\n\n-The trainer is not available during the given date and time or there is a collision with an existing session/class.\n-The room is already booked during the given date and time.\n")
+            print("\nThe class was unable to be scheduled. Please see error(s) above.")
 
     elif choice == '4':
         return

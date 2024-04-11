@@ -271,11 +271,28 @@ def getRoomBookings():
     return roomBookings
 
 def updateRoomBooking(bookingID, newRoomName):
-    booking = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
+    booking_row = db.execute_query("SELECT * FROM bookings WHERE booking_id = %s;", (bookingID,), fetch=True)
 
-    if booking:
-        db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
-        return True
+    if booking_row:
+        class_id = booking_row[0]['class_id']
+
+        joint_row = db.execute_query("SELECT fitnessclass.class_date, fitnessclass.start_time, fitnessclass.end_time FROM bookings JOIN fitnessclass ON bookings.class_id = fitnessclass.class_id WHERE bookings.booking_id = %s;", (bookingID,), fetch=True)
+
+        if joint_row:
+            classDate = joint_row[0]['class_date']
+            startTime = joint_row[0]['start_time']
+            endTime = joint_row[0]['end_time']
+            roomName = newRoomName
+
+            roomAvailable = checkRoomAvailability(classDate, startTime, endTime, roomName)
+
+            if roomAvailable:
+                db.execute_query("UPDATE bookings SET room_name = %s WHERE booking_id = %s;", (newRoomName, bookingID), fetch=False)
+                return True
+            else:
+                return False
+        else:
+            return False
     else:
         return False
 
