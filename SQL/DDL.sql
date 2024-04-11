@@ -44,6 +44,7 @@ CREATE TABLE FitnessGoals (
     CONSTRAINT fk_member_goals
         FOREIGN KEY (member_id)
         REFERENCES Member(member_id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE ExerciseRoutines (
@@ -52,6 +53,7 @@ CREATE TABLE ExerciseRoutines (
     CONSTRAINT fk_member_routines
         FOREIGN KEY (member_id)
         REFERENCES Member(member_id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE PTSession (
