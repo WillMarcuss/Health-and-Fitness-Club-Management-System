@@ -10,10 +10,10 @@ def register():
     weight = input("Weight (kg): ")
     goals = input("Fitness Goals: ")
     routines = input("Exercise Routines: ")
-    member_id = fs.register_member(first_name, last_name, height, weight, goals, routines)
     if first_name == "" or last_name == "" or height == "" or weight == "" or goals == "" or routines == "": 
         print("Please Enter an Entry for all Fields!")
         return
+    member_id = fs.register_member(first_name, last_name, height, weight, goals, routines)
     print(
         f"\nRegistered successfully. Your member ID is {member_id}. Please remember it for login."
     )
