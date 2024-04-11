@@ -1,4 +1,4 @@
-import functions as fs
+import utility as util
 
 #Admin Functions
 # 1. Manage Room Bookings
@@ -13,7 +13,7 @@ def manageRoomBookings():
         print('\n====================================================')
         print('\nAll scheduled room bookings (starting from earliest date):')
 
-        roomBookings = fs.getRoomBookings()
+        roomBookings = util.getRoomBookings()
 
         if roomBookings:
             for roomBooking in roomBookings:
@@ -45,7 +45,7 @@ def manageRoomBookings():
                 break
             print('\nInvalid room name.\n')
 
-        successfulUpdate = fs.updateRoomBooking(bookingID, newRoomName)
+        successfulUpdate = util.updateRoomBooking(bookingID, newRoomName)
 
         if successfulUpdate:
             print("\nSuccessfully updated booking!")
@@ -71,7 +71,7 @@ def monitorEquipmentMaintenance():
         print('\n====================================================')
         print('\nAll equipment maintenance records:\n')
 
-        maintenanceRecords = fs.getMaintenanceRecords()
+        maintenanceRecords = util.getMaintenanceRecords()
         
         if maintenanceRecords:
             for record in maintenanceRecords:
@@ -97,7 +97,7 @@ def monitorEquipmentMaintenance():
                 break
             print('\nInvalid date.\n')
 
-        equipment = fs.updateEquipmentMaintenance(equipmentID, newDate)
+        equipment = util.updateEquipmentMaintenance(equipmentID, newDate)
 
         if equipment:
             print("\nSuccessfully updated equipment maintenance date!\n")
@@ -117,7 +117,7 @@ def monitorEquipmentMaintenance():
                 break
             print('\nInvalid date.\n')
 
-        fs.addEquipment(equipmentName, maintenanceDate)
+        util.addEquipment(equipmentName, maintenanceDate)
 
         print("\nSuccessfully added new equipment and maintenance date!\n")
 
@@ -141,7 +141,7 @@ def updateClassSchedule():
         print('\n====================================================')
         print('\nAll scheduled fitness classes:\n')
         
-        classSchedules = fs.getClassSchedules()
+        classSchedules = util.getClassSchedules()
 
         if classSchedules:
             for schedule in classSchedules:
@@ -163,7 +163,7 @@ def updateClassSchedule():
             newStartTime = input("Enter new start time (HH:MM): ")
             newEndTime = input("Enter new end time (HH:MM): ")
 
-            if not fs.checkDateTimeValidity(newDate, newStartTime, newEndTime):
+            if not util.checkDateTimeValidity(newDate, newStartTime, newEndTime):
                 print("\nInvalid date/time format.")
                 pass
             elif not classID.isdigit():
@@ -174,7 +174,7 @@ def updateClassSchedule():
             else:
                 break
 
-        successfulUpdate = fs.updateClassSchedule(classID, newDate, newStartTime, newEndTime)
+        successfulUpdate = util.updateClassSchedule(classID, newDate, newStartTime, newEndTime)
         
         if successfulUpdate:
             print("\nClass schedule updated successfully!")
@@ -190,12 +190,12 @@ def updateClassSchedule():
             maxParticipants = input("Enter max participants (#): ")
             trainerID = input("Enter trainer ID: ")
 
-            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and fs.checkDateTimeValidity(classDate, startTime, endTime)):
+            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and util.checkDateTimeValidity(classDate, startTime, endTime)):
                 print("\nInvalid input. Please ensure all fields are inputted and are in proper format.")
             else:
                 break
         
-        trainerAvailable = fs.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
+        trainerAvailable = util.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
 
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
@@ -226,7 +226,7 @@ def billingsAndPayment():
             billing_choice = input("Enter Choice: ")
 
             if billing_choice == '1':
-                unpaid_billings = fs.getUnpaidBillings()
+                unpaid_billings = util.getUnpaidBillings()
                 print("\n--- Unpaid Billings ---\n")
                 if unpaid_billings:
                     for billing in unpaid_billings:
@@ -235,7 +235,7 @@ def billingsAndPayment():
                     print("No unpaid billings.")
                 
             elif billing_choice == '2':
-                paid_billings = fs.getPaidBillings()
+                paid_billings = util.getPaidBillings()
                 print("\n--- Paid Billings ---\n")
                 if paid_billings:
                     for billing in paid_billings:
@@ -256,7 +256,7 @@ def billingsAndPayment():
             else:
                 print("Invalid input. Enter a valid ID.")
 
-        successfulPayment = fs.processPayment(billingID)
+        successfulPayment = util.processPayment(billingID)
 
         if successfulPayment:
             print(f"Billing ID {billingID} has been charged and is now paid.")
