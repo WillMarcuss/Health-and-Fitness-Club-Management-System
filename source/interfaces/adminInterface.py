@@ -169,7 +169,7 @@ def updateClassSchedule():
             elif not classID.isdigit():
                 print("\nInvalid input. Enter a valid ID.")
                 pass
-            elif not fs.classExists(classID):
+            elif not util.classExists(classID):
                 print('\nClass ID does not exist.')
                 pass
             elif not ((classID and newDate and newStartTime and newEndTime)):
