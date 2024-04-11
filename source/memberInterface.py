@@ -3,13 +3,17 @@ import functions as fs
 
 def register():
     print("\nRegister New Member ($120 fee)")
-    first_name = input("First name: ")
-    last_name = input("Last name: ")
-    height = input("Height (cm): ")
-    weight = input("Weight (kg): ")
-    goals = input("Fitness Goals: ")
-    routines = input("Exercise Routines: ")
-    member_id = fs.register_member(first_name, last_name, height, weight, goals, routines)
+    try:
+        first_name = input("First name: ")
+        last_name = input("Last name: ")
+        height = input("Height (cm): ")
+        weight = input("Weight (kg): ")
+        goals = input("Fitness Goals: ")
+        routines = input("Exercise Routines: ")
+        member_id = fs.register_member(first_name, last_name, height, weight, goals, routines)
+    except:
+        print("Please Enter an Entry for all Fields!")
+        return
     print(
         f"\nRegistered successfully. Your member ID is {member_id}. Please remember it for login."
     )
