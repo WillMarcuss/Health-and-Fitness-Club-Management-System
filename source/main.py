@@ -1,7 +1,7 @@
 import functions as fs
-import trainerInterface as trainer
-import memberInterface as member
-import adminInterface as admin
+import interfaces.trainerInterface as trainer
+import interfaces.memberInterface as member
+import interfaces.adminInterface as admin
 
 # Member interface
 def member_interface(member_id):
