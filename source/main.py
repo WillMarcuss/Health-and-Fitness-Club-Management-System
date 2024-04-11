@@ -1,4 +1,4 @@
-import functions as fs
+import utility as fs
 import interfaces.trainerInterface as trainer
 import interfaces.memberInterface as member
 import interfaces.adminInterface as admin
