@@ -163,10 +163,13 @@ def updateClassSchedule():
             newStartTime = input("Enter new start time (HH:MM): ")
             newEndTime = input("Enter new end time (HH:MM): ")
 
-            if not classID.isdigit():
+            if not fs.checkDateTimeValidity(newDate, newStartTime, newEndTime):
+                print("\nInvalid date/time format.")
+                pass
+            elif not classID.isdigit():
                 print("\nInvalid input. Enter a valid ID.")
                 pass
-            if not ((classID and newDate and newStartTime and newEndTime)):
+            elif not ((classID and newDate and newStartTime and newEndTime)):
                 print("\nInvalid input. Please ensure are fields are inputted and are in proper format.")
             else:
                 break
@@ -187,7 +190,7 @@ def updateClassSchedule():
             maxParticipants = input("Enter max participants (#): ")
             trainerID = input("Enter trainer ID: ")
 
-            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit()):
+            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and fs.checkDateTimeValidity(classDate, startTime, endTime)):
                 print("\nInvalid input. Please ensure all fields are inputted and are in proper format.")
             else:
                 break
