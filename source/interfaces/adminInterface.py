@@ -194,12 +194,12 @@ def updateClassSchedule():
             trainerID = input("Enter trainer ID: ")
             roomName = input("Enter room name: ")
 
-            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and util.checkDateTimeValidity(classDate, startTime, endTime)):
+            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and util.checkDateTimeValidity(classDate, startTime, endTime) and roomName):
                 print("\nInvalid input. Please ensure all fields are inputted and are in proper format.")
             else:
                 break
         
-        trainerAvailable = util.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
+        trainerAvailable = util.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID, roomName)
 
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
