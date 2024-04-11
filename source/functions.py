@@ -319,18 +319,28 @@ def updateClassSchedule(classID, newDate, newStartTime, newEndTime):
 
         fitnessClass = db.execute_query("SELECT * FROM fitnessclass WHERE class_id = %s;", (classID,), fetch=True)
         trainerAvailable = checkTrainerAvailability(newDate, newStartTime, newEndTime, fitnessClass[0]['trainer_id'])
+
+        roomName = db.execute_query("SELECT room_name FROM bookings WHERE class_id = %s;", (classID,), fetch=True)
+        roomAvailable = checkRoomAvailability(newDate, newStartTime, newEndTime, roomName[0]['room_name'])
         
-        if fitnessClass and trainerAvailable:
+        if fitnessClass and trainerAvailable and roomAvailable:
             db.execute_query("UPDATE fitnessclass SET class_date = %s, start_time = %s, end_time = %s WHERE class_id = %s;", (newDate, newStartTime, newEndTime, classID), fetch=False)
             return True
         else:
+            if not trainerAvailable or not roomAvailable:
+                print ('\n========ERROR(S):========\n')
+                if not trainerAvailable:
+                    print("-Trainer not available at the requested time.")
+                if not roomAvailable:
+                    print("-Room not available at the requested time.")
+                print('\n=========================\n')
             return False
 
 def checkTrainerAvailability(classDate, startTime, endTime, trainerID):
     trainerAvailability = db.execute_query("SELECT * FROM traineravailability WHERE trainer_id = %s AND date = %s AND start_time <= %s AND end_time >= %s;", (trainerID, classDate, startTime, endTime), fetch=True)
 
     ptSessionCollision = db.execute_query("SELECT * FROM ptsession WHERE trainer_id = %s AND session_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
-
+ 
     classCollision = db.execute_query("SELECT * FROM fitnessclass WHERE trainer_id = %s AND class_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));", (trainerID, classDate, startTime, startTime, endTime, endTime, startTime, endTime), fetch=True)
 
     if trainerAvailability and not ptSessionCollision and not classCollision:
@@ -362,10 +372,13 @@ def addClass(className, classDate, startTime, endTime, maxParticipants, trainerI
         db.execute_query("INSERT INTO fitnessclass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES (%s, %s, %s, %s, %s, %s, %s);", (className, classDate, startTime, endTime, 0, maxParticipants, trainerID), fetch=False)
         return True
     else:
-        if not roomAvailable:
-            print('room not available.')
-        if not trainerAvailable:
-            print('trainer not available.')
+        if not trainerAvailable or not roomAvailable:
+            print ('\n========ERROR(S):========\n')
+            if not trainerAvailable:
+                print("-Trainer not available at the requested time.")
+            if not roomAvailable:
+                print("-Room not available at the requested time.")
+            print('\n=========================\n')
         return False
 
 def getUnpaidBillings():
