@@ -29,10 +29,6 @@ CREATE TABLE TrainerAvailability (
         CHECK (end_time > start_time)
 );
 
-CREATE INDEX idxTrainerDate
-    ON TrainerAvailability (trainer_id, date);
-
-
 -- Creating the Billing table
 CREATE TABLE Billing (
     billing_id SERIAL PRIMARY KEY,
