@@ -23,7 +23,7 @@ CREATE TABLE TrainerAvailability (
         REFERENCES Trainer(trainer_id)
         ON DELETE CASCADE,
     CONSTRAINT check_time
-        CHECK (end_time > start_time),
+        CHECK (end_time > start_time)
 );
 
 CREATE TABLE Billing (
