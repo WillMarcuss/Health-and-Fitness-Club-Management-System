@@ -309,8 +309,14 @@ def getClassSchedules():
 
     return classSchedules
 
+def classExists(classID):
+    fitnessClass = db.execute_query("SELECT * FROM fitnessclass WHERE class_id = %s;", (classID,), fetch=True)
+    if not fitnessClass:
+        return False
+    return True
+
 def updateClassSchedule(classID, newDate, newStartTime, newEndTime):
-    
+
         fitnessClass = db.execute_query("SELECT * FROM fitnessclass WHERE class_id = %s;", (classID,), fetch=True)
         trainerAvailable = checkTrainerAvailability(newDate, newStartTime, newEndTime, fitnessClass[0]['trainer_id'])
         
@@ -332,14 +338,34 @@ def checkTrainerAvailability(classDate, startTime, endTime, trainerID):
     else:
         return False
     
-def addClass(className, classDate, startTime, endTime, maxParticipants, trainerID):
+def checkRoomAvailability(classDate, startTime, endTime, roomName):
+    roomExistence = db.execute_query("SELECT * FROM bookings WHERE room_name = %s;", (roomName,), fetch=True)
+    
+    if not roomExistence:
+        return True
+    else:
+        checkIfClashQuery = "SELECT * FROM bookings JOIN fitnessclass ON bookings.class_id = fitnessclass.class_id WHERE bookings.room_name = %s AND fitnessclass.class_date = %s AND ((start_time <= %s AND end_time > %s) OR (start_time < %s AND end_time >= %s) OR (start_time >= %s AND end_time <= %s));"
+        doesClash = db.execute_query(checkIfClashQuery, (roomName, classDate, startTime, endTime, startTime, endTime, startTime, endTime), fetch=True)
+
+        if doesClash:
+            return False
+        else:
+            return True
+
+    
+def addClass(className, classDate, startTime, endTime, maxParticipants, trainerID, roomName):
 
     trainerAvailable = checkTrainerAvailability(classDate, startTime, endTime, trainerID)
+    roomAvailable = checkRoomAvailability(classDate, startTime, endTime, roomName)
 
-    if trainerAvailable:
+    if trainerAvailable and roomAvailable:
         db.execute_query("INSERT INTO fitnessclass (class_name, class_date, start_time, end_time, num_participants, max_participants, trainer_id) VALUES (%s, %s, %s, %s, %s, %s, %s);", (className, classDate, startTime, endTime, 0, maxParticipants, trainerID), fetch=False)
         return True
     else:
+        if not roomAvailable:
+            print('room not available.')
+        if not trainerAvailable:
+            print('trainer not available.')
         return False
 
 def getUnpaidBillings():

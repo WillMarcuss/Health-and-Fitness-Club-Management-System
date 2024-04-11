@@ -169,6 +169,9 @@ def updateClassSchedule():
             elif not classID.isdigit():
                 print("\nInvalid input. Enter a valid ID.")
                 pass
+            elif not fs.classExists(classID):
+                print('\nClass ID does not exist.')
+                pass
             elif not ((classID and newDate and newStartTime and newEndTime)):
                 print("\nInvalid input. Please ensure are fields are inputted and are in proper format.")
             else:
@@ -189,18 +192,19 @@ def updateClassSchedule():
             endTime = input("Enter end time (HH:MM): ")
             maxParticipants = input("Enter max participants (#): ")
             trainerID = input("Enter trainer ID: ")
+            roomName = input("Enter room name: ")
 
-            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and fs.checkDateTimeValidity(classDate, startTime, endTime)):
+            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID and roomName) and trainerID.isdigit() and maxParticipants.isdigit() and fs.checkDateTimeValidity(classDate, startTime, endTime)):
                 print("\nInvalid input. Please ensure all fields are inputted and are in proper format.")
             else:
                 break
         
-        trainerAvailable = fs.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
+        trainerAvailable = fs.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID, roomName)
 
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
         else:
-            print("\nThe trainer is not available during the given date and time or there is a collision with an existing session/class.")
+            print("\nThe class was unable to be scheduled. This could be for one of two reasons:\n\n-The trainer is not available during the given date and time or there is a collision with an existing session/class.\n-The room is already booked during the given date and time.\n")
 
     elif choice == '4':
         return
