@@ -41,9 +41,9 @@ def trainer_interface(trainer_id):
             print("Invalid option.")
 
 
-# Admin interface
+# Admin interface 
 def admin_interface():
-    print("\nWelcome Admin")
+    print("\nWelcome Admin") #
     while True:
         print(
             "\n1. Manage Room Bookings\n2. Monitor Equipment Maintenance\n3. Update Class Schedules\n4. Process Payments\n5. Logout"
@@ -83,21 +83,21 @@ def main():
                 print("Please enter a valid Member ID")
         elif choice == "2":
             trainer_id = input("Enter Trainer ID: ")
-            try:
+            if trainer_id.isdigit():
                 if fs.check_id_exists(trainer_id, "trainer", "trainer_id"):
                     trainer_interface(trainer_id)
                 else:
                     print("\nTrainer ID does not exist. Please try again.")
-            except:
+            else:
                 print("Please enter a valid Trainer ID")
         elif choice == "3":
             employee_id = input("Enter Employee ID: ")
-            try:
+            if employee_id.isdigit():
                 if fs.check_id_exists(employee_id, "adminstaff", "employee_id"):
                     admin_interface()
                 else:
                     print("\nEmployee ID does not exist. Please try again.")
-            except:
+            else:
                 print("Please enter a valid Employee ID")
         elif choice == "4":
             member.register()

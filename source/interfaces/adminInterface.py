@@ -50,7 +50,7 @@ def manageRoomBookings():
         if successfulUpdate:
             print("\nSuccessfully updated booking!")
         else:
-            print('\nBooking ID does not exist.')
+            print(f'\nRoom Booking unable to be moved to {newRoomName}')
 
     elif choice == '3':
         return
@@ -169,6 +169,9 @@ def updateClassSchedule():
             elif not classID.isdigit():
                 print("\nInvalid input. Enter a valid ID.")
                 pass
+            elif not util.classExists(classID):
+                print('\nClass ID does not exist.')
+                pass
             elif not ((classID and newDate and newStartTime and newEndTime)):
                 print("\nInvalid input. Please ensure are fields are inputted and are in proper format.")
             else:
@@ -179,7 +182,7 @@ def updateClassSchedule():
         if successfulUpdate:
             print("\nClass schedule updated successfully!")
         else:
-            print("\nTrainer is unavailable at that time.")
+            print("\nUnable to update class. Please see error(s) above.")
 
     elif choice == '3':
         while True:
@@ -189,18 +192,19 @@ def updateClassSchedule():
             endTime = input("Enter end time (HH:MM): ")
             maxParticipants = input("Enter max participants (#): ")
             trainerID = input("Enter trainer ID: ")
+            roomName = input("Enter room name: ")
 
-            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and util.checkDateTimeValidity(classDate, startTime, endTime)):
+            if not ((className and classDate and startTime and endTime and maxParticipants and trainerID) and trainerID.isdigit() and maxParticipants.isdigit() and util.checkDateTimeValidity(classDate, startTime, endTime) and roomName):
                 print("\nInvalid input. Please ensure all fields are inputted and are in proper format.")
             else:
                 break
         
-        trainerAvailable = util.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID)
+        trainerAvailable = util.addClass(className, classDate, startTime, endTime, maxParticipants, trainerID, roomName)
 
         if trainerAvailable:
             print("\nNew class schedule added successfully!")
         else:
-            print("\nThe trainer is not available during the given date and time or there is a collision with an existing session/class.")
+            print("\nThe class was unable to be scheduled. Please see error(s) above.")
 
     elif choice == '4':
         return
