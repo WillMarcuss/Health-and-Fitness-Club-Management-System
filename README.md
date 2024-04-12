@@ -28,3 +28,6 @@ Group Members:
 2. Open the directory where you cloned this repo.
 3. Make sure PostgreSQL server is running.
 4. Make sure database in PGAdmin is named '**Health-Fitness-Club**'
+
+## Video Demonstration
+https://youtu.be/sXb_qM6-Mqk?si=eJhrS2W7_Y-XFT7S
