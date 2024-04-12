@@ -1,4 +1,4 @@
-import functions as fs
+import utility as fs
 import interfaces.trainerInterface as trainer
 import interfaces.memberInterface as member
 import interfaces.adminInterface as admin
@@ -41,9 +41,9 @@ def trainer_interface(trainer_id):
             print("Invalid option.")
 
 
-# Admin interface
+# Admin interface 
 def admin_interface():
-    print("\nWelcome Admin")
+    print("\nWelcome Admin") #
     while True:
         print(
             "\n1. Manage Room Bookings\n2. Monitor Equipment Maintenance\n3. Update Class Schedules\n4. Process Payments\n5. Logout"
