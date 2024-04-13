@@ -1,4 +1,4 @@
-CREATE TABLE Member (
+CREATE TABLE IF NOT EXISTS Member (
     member_id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
@@ -6,13 +6,13 @@ CREATE TABLE Member (
     weight NUMERIC(5, 2) CHECK (weight > 0)
 );
 
-CREATE TABLE Trainer (
+CREATE TABLE IF NOT EXISTS Trainer (
     trainer_id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255)
 );
 
-CREATE TABLE TrainerAvailability (
+CREATE TABLE IF NOT EXISTS TrainerAvailability (
     trainer_id INT NOT NULL,
     date DATE NOT NULL,
     start_time TIME NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE TrainerAvailability (
         CHECK (end_time > start_time)
 );
 
-CREATE TABLE Billing (
+CREATE TABLE IF NOT EXISTS Billing (
     billing_id SERIAL PRIMARY KEY,
     category VARCHAR(255),
     amount NUMERIC(10, 2) NOT NULL CHECK (amount >= 0),
@@ -37,7 +37,7 @@ CREATE TABLE Billing (
         REFERENCES Member(member_id)
 );
 
-CREATE TABLE FitnessGoals (
+CREATE TABLE IF NOT EXISTS FitnessGoals (
     member_id INT PRIMARY KEY,
     goals TEXT,
     CONSTRAINT fk_member_goals
@@ -46,7 +46,7 @@ CREATE TABLE FitnessGoals (
         ON DELETE CASCADE
 );
 
-CREATE TABLE ExerciseRoutines (
+CREATE TABLE IF NOT EXISTS ExerciseRoutines (
     member_id INT PRIMARY KEY,
     routines TEXT,
     CONSTRAINT fk_member_routines
@@ -55,7 +55,7 @@ CREATE TABLE ExerciseRoutines (
         ON DELETE CASCADE
 );
 
-CREATE TABLE PTSession (
+CREATE TABLE IF NOT EXISTS PTSession (
     session_id SERIAL PRIMARY KEY,
     session_date DATE,
     start_time TIME,
@@ -70,7 +70,7 @@ CREATE TABLE PTSession (
         REFERENCES Member(member_id)
 );
 
-CREATE TABLE FitnessClass (
+CREATE TABLE IF NOT EXISTS FitnessClass (
     class_id SERIAL PRIMARY KEY,
     class_name VARCHAR(255),
     class_date DATE,
@@ -86,7 +86,7 @@ CREATE TABLE FitnessClass (
         CHECK (num_participants <= max_participants)
 );
 
-CREATE TABLE EnrolledMembers (
+CREATE TABLE IF NOT EXISTS EnrolledMembers (
     class_id INT,
     member_id INT,
     PRIMARY KEY (class_id, member_id),
@@ -98,7 +98,7 @@ CREATE TABLE EnrolledMembers (
         REFERENCES Member(member_id)
 );
 
-CREATE TABLE Bookings (
+CREATE TABLE IF NOT EXISTS Bookings (
     booking_id SERIAL PRIMARY KEY,
     room_name VARCHAR(255),
     class_id INT,
@@ -107,13 +107,13 @@ CREATE TABLE Bookings (
         REFERENCES FitnessClass(class_id)
 );
 
-CREATE TABLE AdminStaff (
+CREATE TABLE IF NOT EXISTS AdminStaff (
     employee_id SERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255)
 );
 
-CREATE TABLE FitnessEquipment (
+CREATE TABLE IF NOT EXISTS FitnessEquipment (
     equipment_id SERIAL PRIMARY KEY,
     equipment_name VARCHAR(255),
     last_maintenance DATE
